@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sensor_box/ui/screens/home_screen.dart';
+import 'package:sensor_box/ui/screens/phone/phone_home_screen.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+import '../screen_controller.dart';
+
+class PhoneSplashScreen extends StatefulWidget {
+  final ScreenController state;
+  const PhoneSplashScreen({Key? key, required this.state}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<PhoneSplashScreen> createState() => _PhoneSplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _PhoneSplashScreenState extends State<PhoneSplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
@@ -66,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
                 AnimatedOpacity(
                     duration: const Duration(seconds: 2),
                     onEnd: (){
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=> const HomeScreen()), (route) => false);
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=> HomeScreen(state: widget.state,)), (route) => false);
                     },
                     opacity: opacityLevel,
                     child: const Text(

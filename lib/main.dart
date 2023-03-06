@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sensor_box/ui/screens/home_screen.dart';
-import 'package:sensor_box/ui/screens/splash_screen.dart';
+import 'package:sensor_box/pathfinder.dart';
+import 'package:sensor_box/ui/screens/phone/phone_home_screen.dart';
+import 'package:sensor_box/ui/screens/phone/phone_splash_screen.dart';
 
 void main() {
   runApp(const SensorBox());
@@ -18,7 +19,7 @@ class SensorBox extends StatelessWidget {
         primaryColorDark: const Color(0xFF0D1117),
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen()
+      home: const Pathfinder()
     );
   }
 }

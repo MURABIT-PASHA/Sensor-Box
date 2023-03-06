@@ -93,8 +93,7 @@ class ScanResultTile extends StatelessWidget {
       leading: Text(result.rssi.toString()),
       trailing: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.black,
+          foregroundColor: Colors.white, backgroundColor: Colors.black,
         ),
         onPressed: (result.advertisementData.connectable) ? onTap : null,
         child: const Text('CONNECT'),
@@ -147,7 +146,7 @@ class ServiceTile extends StatelessWidget {
       return ListTile(
         title: const Text('Service'),
         subtitle:
-            Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
+        Text('0x${service.uuid.toString().toUpperCase().substring(4, 8)}'),
       );
     }
   }
@@ -162,11 +161,11 @@ class CharacteristicTile extends StatelessWidget {
 
   const CharacteristicTile(
       {Key? key,
-      required this.characteristic,
-      required this.descriptorTiles,
-      this.onReadPressed,
-      this.onWritePressed,
-      this.onNotificationPressed})
+        required this.characteristic,
+        required this.descriptorTiles,
+        this.onReadPressed,
+        this.onWritePressed,
+        this.onNotificationPressed})
       : super(key: key);
 
   @override
@@ -231,9 +230,9 @@ class DescriptorTile extends StatelessWidget {
 
   const DescriptorTile(
       {Key? key,
-      required this.descriptor,
-      this.onReadPressed,
-      this.onWritePressed})
+        required this.descriptor,
+        this.onReadPressed,
+        this.onWritePressed})
       : super(key: key);
 
   @override
