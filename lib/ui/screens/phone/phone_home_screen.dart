@@ -13,9 +13,9 @@ import 'package:sensor_box/ui/screens/screen_controller.dart';
 import '../../widgets/widgets.dart';
 
 
-class HomeScreen extends StatelessWidget {
+class PhoneHomeScreen extends StatelessWidget {
   final ScreenController state;
-  const HomeScreen({Key? key, required this.state}) : super(key: key);
+  const PhoneHomeScreen({Key? key, required this.state}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

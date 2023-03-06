@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sensor_box/pathfinder.dart';
-import 'package:sensor_box/ui/screens/phone/phone_home_screen.dart';
-import 'package:sensor_box/ui/screens/phone/phone_splash_screen.dart';
+import 'package:sensor_box/backend/pathfinder.dart';
 
 void main() {
   runApp(const SensorBox());

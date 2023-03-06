@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../pathfinder.dart';
+import '../../backend/pathfinder.dart';
 import 'phone/phone_view.dart';
 import 'watch/watch_view.dart';
 

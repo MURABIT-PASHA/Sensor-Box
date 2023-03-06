@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_box/ui/screens/watch/watch_splash_screen.dart';
 import '../../theme/gradients/time_gradient.dart';
 import '../screen_controller.dart';
 
-/// View for [DailyForecastRoute] for watch-sized devices while the watch
-/// is in an active mode.
 class WatchActiveScreen extends StatelessWidget {
   final ScreenController state;
 
@@ -14,8 +13,8 @@ class WatchActiveScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black54,
       body: TimeGradient(
-        child: Center(
-          //TODO: Saatin active durumdayken yapılacak etkinliği ekle
+        child: WatchSplashScreen(
+          state: state,
         ),
       ),
     );

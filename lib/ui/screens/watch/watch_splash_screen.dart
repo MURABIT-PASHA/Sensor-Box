@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sensor_box/ui/screens/phone/phone_home_screen.dart';
+import 'package:sensor_box/ui/screens/watch/watch_home_screen.dart';
 
 import '../screen_controller.dart';
 
-class PhoneSplashScreen extends StatefulWidget {
+class WatchSplashScreen extends StatefulWidget {
   final ScreenController state;
-  const PhoneSplashScreen({Key? key, required this.state}) : super(key: key);
+  const WatchSplashScreen({Key? key, required this.state}) : super(key: key);
 
   @override
-  State<PhoneSplashScreen> createState() => _PhoneSplashScreenState();
+  State<WatchSplashScreen> createState() => _WatchSplashScreenState();
 }
 
-class _PhoneSplashScreenState extends State<PhoneSplashScreen>
+class _WatchSplashScreenState extends State<WatchSplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
@@ -22,7 +22,6 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 1500), () {
-
       setState(() {
         opacityLevel = 1.0;
       });
@@ -33,7 +32,7 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
     );
     _animation = Tween<Offset>(
       begin: const Offset(2.5, 0.0),
-      end: const Offset(0.5, 0.0),
+      end: const Offset(0.0, 0.0),
     ).animate(_controller);
     _controller.forward();
   }
@@ -46,15 +45,17 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
-            height: 100,
-            width: MediaQuery.of(context).size.width - 20,
+            padding: const EdgeInsets.all(5),
+            height: height/3,
+            width: width - 20,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -62,14 +63,20 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
                   position: _animation,
                   child: Image.asset(
                     'assets/icons/logo.png',
-                    height: 75.0,
-                    width: 75.0,
+                    height: 50.0,
+                    width: 50.0,
                   ),
                 ),
                 AnimatedOpacity(
                     duration: const Duration(seconds: 2),
-                    onEnd: (){
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder)=> PhoneHomeScreen(state: widget.state,)), (route) => false);
+                    onEnd: () {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (builder) => WatchHomeScreen(
+                                    state: widget.state,
+                                  )),
+                          (route) => false);
                     },
                     opacity: opacityLevel,
                     child: const Text(
@@ -79,15 +86,15 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
                           fontFamily: "Times New Roman",
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                          fontSize: 10),
                     ))
               ],
             ),
           ),
           Container(
             alignment: Alignment.center,
-            height: 75,
-            width: MediaQuery.of(context).size.width - 10,
+            height: height/3,
+            width: width - 10,
             padding: const EdgeInsets.all(10),
             child: const Text(
               "SENSOR BOX",
@@ -95,13 +102,13 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
                   fontFamily: "Poppins",
                   color: Colors.white70,
                   fontWeight: FontWeight.bold,
-                  fontSize: 35),
+                  fontSize: 9),
             ),
           ),
           Container(
             alignment: Alignment.center,
-            height: 75,
-            width: MediaQuery.of(context).size.width - 10,
+            height: height/3,
+            width: width - 10,
             padding: const EdgeInsets.all(10),
             child: const Text(
               "Created by MURABIT-PASHA",
@@ -109,7 +116,7 @@ class _PhoneSplashScreenState extends State<PhoneSplashScreen>
                   fontFamily: "Poppins",
                   color: Colors.white38,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  fontSize: 9),
             ),
           )
         ],
