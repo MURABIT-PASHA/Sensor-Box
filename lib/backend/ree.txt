@@ -1,0 +1,88 @@
+SizedBox(
+        width: width,
+        height: height,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: height/2,
+              width: width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: height/2,
+                    width: width/2,
+                    child: ListView(
+                      children: <Widget>[
+                        const Text('Accelerometer'),
+                        if (_accelerometerValues != [])
+                          Text('X: ${_accelerometerValues[0].toStringAsFixed(3)}'),
+                        if (_accelerometerValues != [])
+                          Text('Y: ${_accelerometerValues[1].toStringAsFixed(3)}'),
+                        if (_accelerometerValues != [])
+                          Text('Z: ${_accelerometerValues[2].toStringAsFixed(3)}'),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: height/2,
+                    width: width/2,
+                    child: ListView(
+                      children: <Widget>[
+                        const Text('User Accelerometer'),
+                        if (_userAccelerometerValues != [])
+                          Text(
+                              'X: ${_userAccelerometerValues[0].toStringAsFixed(3)}'),
+                        if (_userAccelerometerValues != [])
+                          Text(
+                              'Y: ${_userAccelerometerValues[1].toStringAsFixed(3)}'),
+                        if (_userAccelerometerValues != [])
+                          Text(
+                              'Z: ${_userAccelerometerValues[2].toStringAsFixed(3)}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const Text('Gyroscope'),
+                    if (_gyroscopeValues != [])
+                      Text('X: ${_gyroscopeValues[0].toStringAsFixed(3)}'),
+                    if (_gyroscopeValues != [])
+                      Text('Y: ${_gyroscopeValues[1].toStringAsFixed(3)}'),
+                    if (_gyroscopeValues != [])
+                      Text('Z: ${_gyroscopeValues[2].toStringAsFixed(3)}'),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const Text('Magnetometer'),
+                    if (_magnetometerValues != [])
+                      Text('X: ${_magnetometerValues[0].toStringAsFixed(3)}'),
+                    if (_magnetometerValues != [])
+                      Text('Y: ${_magnetometerValues[1].toStringAsFixed(3)}'),
+                    if (_magnetometerValues != [])
+                      Text('Z: ${_magnetometerValues[2].toStringAsFixed(3)}'),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
