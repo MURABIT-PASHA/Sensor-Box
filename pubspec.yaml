@@ -19,7 +19,6 @@ dependencies:
   flutter_blue_plus: ^1.4.0
   scoped_model: ^2.0.0
   wear: ^1.1.0
-  sensors_plus: ^2.0.2
   syncfusion_flutter_charts: ^20.4.54
 
 dev_dependencies:

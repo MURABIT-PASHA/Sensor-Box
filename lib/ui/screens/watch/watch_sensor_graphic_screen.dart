@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class WatchSensorGraphicScreen extends StatefulWidget {
@@ -29,41 +28,7 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
   int _time = 0;
 
   Future getStreamData() async {
-    switch (widget.sensorName) {
-      case "Gyroscope":
-        streamSubscriptions.add(gyroscopeEvents.listen((GyroscopeEvent event) {
-          setState(() {
-            _selectedValues = <double>[event.x, event.y, event.z];
-          });
-        }));
-        break;
-      case "Magnetometer":
-        streamSubscriptions
-            .add(magnetometerEvents.listen((MagnetometerEvent event) {
-          setState(() {
-            _selectedValues = <double>[event.x, event.y, event.z];
-          });
-        }));
-        break;
-      case "User Accelerometer":
-        streamSubscriptions
-            .add(userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-          setState(() {
-            _selectedValues = <double>[event.x, event.y, event.z];
-          });
-        }));
-        break;
-      case "Accelerometer":
-        streamSubscriptions
-            .add(accelerometerEvents.listen((AccelerometerEvent event) {
-          setState(() {
-            _selectedValues = <double>[event.x, event.y, event.z];
-          });
-        }));
-        break;
-      default:
-        throw "Unassigned value error!";
-    }
+    //TODO: Get selected sensor values
   }
 
   @override
@@ -125,7 +90,7 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
     );
   }
   void test(Timer timer){
-    print("Bu sadece zaman ayarı testidir.");
+    print("This is a timestamp tester");
   }
 }
 

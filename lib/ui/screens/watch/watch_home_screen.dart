@@ -16,12 +16,16 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
   static const sensorChannel = MethodChannel('com.ktun.edu.tr/sensor');
   late List<String> sensorNames;
   Future<List<String>> getSensorList() async{
-    final arguments = {};
-    return await sensorChannel.invokeMethod('getSensorNames',arguments);
+    List<Object?> sensors = await sensorChannel.invokeMethod('getSensorNames');
+    List<String> sensorNames = sensors.map((item) => item.toString()).toList();
+    return sensorNames;
   }
   @override
   void initState() {
-    getSensorList().then((value) => sensorNames = value);
+    getSensorList().then((value) {
+      sensorNames = value;
+      print(sensorNames);
+    });
     super.initState();
   }
   @override

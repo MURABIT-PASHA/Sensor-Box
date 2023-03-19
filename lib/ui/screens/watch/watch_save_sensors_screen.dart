@@ -12,10 +12,11 @@ class _SaveSensorScreenState extends State<SaveSensorScreen> {
   late List<bool> iconStatus;
   late List<String> selectedSensorNames;
   Map<String,bool> selectedSensors = {};
+
   @override
   void initState() {
     selectedSensorNames = widget.sensorNames;
-    for (var element in widget.sensorNames) { iconStatus.add(false);}
+    iconStatus = List.filled(widget.sensorNames.length, false);
     super.initState();
   }
   @override

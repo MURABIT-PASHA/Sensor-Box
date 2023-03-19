@@ -8,7 +8,6 @@ void main() {
 class SensorBox extends StatelessWidget {
   const SensorBox({super.key});
 
-  // This widgets is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
