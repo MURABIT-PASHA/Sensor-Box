@@ -20,8 +20,6 @@ dependencies:
   scoped_model: ^2.0.0
   wear: ^1.1.0
   sensors_plus: ^2.0.2
-  graphic: ^1.0.1
-  quiver: ^3.2.1
   syncfusion_flutter_charts: ^20.4.54
 
 dev_dependencies:

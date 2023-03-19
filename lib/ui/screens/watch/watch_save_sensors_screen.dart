@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class SaveSensorScreen extends StatefulWidget {
-  const SaveSensorScreen({Key? key}) : super(key: key);
+  final List<String> sensorNames;
+  const SaveSensorScreen({Key? key, required this.sensorNames}) : super(key: key);
 
   @override
   State<SaveSensorScreen> createState() => _SaveSensorScreenState();
@@ -10,11 +11,11 @@ class SaveSensorScreen extends StatefulWidget {
 class _SaveSensorScreenState extends State<SaveSensorScreen> {
   late List<bool> iconStatus;
   late List<String> selectedSensorNames;
+  Map<String,bool> selectedSensors = {};
   @override
   void initState() {
-    selectedSensorNames = ["Accelerometer","Magnetometer","Gyroscope","User Accelerometer"];
-    iconStatus = [false,false,false,false];
-    //TODO: Make selectedList item dynamic in order to do that get all available sensors
+    selectedSensorNames = widget.sensorNames;
+    for (var element in widget.sensorNames) { iconStatus.add(false);}
     super.initState();
   }
   @override
@@ -32,19 +33,18 @@ class _SaveSensorScreenState extends State<SaveSensorScreen> {
       body: Container(
         height: height,
         width: width,
-        padding: EdgeInsets.only(top: 10, left: 5, right: 5,),
+        padding: const EdgeInsets.only(top: 10, left: 5, right: 5,),
         child: Column(
           children: [
-            Container(
+            SizedBox(
               width: width,
               height: height - 70,
               child: ListView.builder(
-                itemCount: 4,
-                //TODO: Convert list view to list view builder and set counter to selected list
+                itemCount: widget.sensorNames.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     leading: Icon(Icons.save, color: iconStatus[index] ? Colors.green: Colors.red,),
-                    title: Text(selectedSensorNames[index], style: TextStyle(color: Colors.white),),
+                    title: Text(selectedSensorNames[index], style: const TextStyle(color: Colors.white),),
                     onTap: (){
                       setState(() {
                         iconStatus[index] = !iconStatus[index];
@@ -54,7 +54,7 @@ class _SaveSensorScreenState extends State<SaveSensorScreen> {
               ),
             ),
             Container(
-              padding: EdgeInsets.only(left: 15, right: 15),
+              padding: const EdgeInsets.only(left: 15, right: 15),
               width: width,
                 height: 45,
                 child: ElevatedButton(
@@ -66,7 +66,7 @@ class _SaveSensorScreenState extends State<SaveSensorScreen> {
                   ),
                     onPressed: (){
                   //TODO: Start save process
-                }, child: Text('Save')))
+                }, child: const Text('Save')))
           ],
         ),
       ),
