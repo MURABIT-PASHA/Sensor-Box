@@ -44,7 +44,7 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
               leading: const Icon(Icons.download_for_offline, color: Colors.white,),
               title: const Text("Record", style: TextStyle(color: Colors.white),),
               onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (builder)=>SaveSensorScreen(sensorNames: sensorNames)));
+                Navigator.push(context, MaterialPageRoute(builder: (builder)=>WatchSaveSensorScreen(sensorNames: sensorNames)));
               },
             ),
             ListTile(

@@ -10,8 +10,6 @@ class LiveSensorScreen extends StatefulWidget {
 }
 
 class _LiveSensorScreenState extends State<LiveSensorScreen> {
-
-
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery

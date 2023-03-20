@@ -21,16 +21,18 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, sensorChannel)
         channel.setMethodCallHandler { call, result ->
-            if (call.method == "getSensorNames") {
-                val sensorNames = getSensorNames()
-                result.success(sensorNames)
-            }
-            else if (call.method == "getSensorValues"){
-                val sensorValues = getAllSensorValues()
-                result.success(sensorValues)
-            }
-            else{
-                throw Throwable("Wrong Method Call ")
+            when (call.method) {
+                "getSensorNames" -> {
+                    val sensorNames = getSensorNames()
+                    result.success(sensorNames)
+                }
+                "getSensorValues" -> {
+                    val sensorValues = getAllSensorValues()
+                    result.success(sensorValues)
+                }
+                else -> {
+                    throw Throwable("Wrong Method Call ")
+                }
             }
         }
     }
@@ -44,38 +46,34 @@ class MainActivity : FlutterActivity() {
         }
         return sensorNames
     }
-    private fun getAllSensorValues(): List<SensorData> {
+    private fun getAllSensorValues(): Map<String, Map<String, Any>> {
         val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
-        val sensorDataList = mutableListOf<SensorData>()
+        val sensorDataMap = mutableMapOf<String, Map<String, Any>>()
+
         for (sensor in deviceSensors) {
-            sensorManager.registerListener(object : SensorEventListener {
-                override fun onSensorChanged(event: SensorEvent?) {
-                    if (event != null) {
-                        val sensorData = SensorData(
-                            sensorName = sensor.name,
-                            timestamp = event.timestamp,
-                            accuracy = event.accuracy,
-                            x = event.values[0],
-                            y = event.values[1],
-                            z = event.values[2]
-                        )
-                        sensorDataList.add(sensorData)
+            println("Sensor name: ")
+            print(sensor.name)
+            sensorManager.getDefaultSensor(sensor.type)?.also {
+                sensorManager.registerListener(
+                    object : SensorEventListener {
+                    override fun onSensorChanged(event: SensorEvent?) {
+                        print("SensorChanged")
+                        if (event != null) {
+                                val sensorDataEntry = mutableMapOf<String, Any>(
+                                    "timestamp" to event.timestamp,
+                                    "accuracy" to event.accuracy,
+                                    "values" to event.values.toList()
+                                )
+                                sensorDataMap[sensor.name] = sensorDataEntry
+                        }
                     }
-                }
-                override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                    // ignore
-                }
-            }, sensor, SensorManager.SENSOR_DELAY_NORMAL)
+                    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                        return
+                    }
+                }, it, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_NORMAL)
+            }
         }
-        return sensorDataList
+        return sensorDataMap
     }
-    data class SensorData(
-        val sensorName: String,
-        val timestamp: Long,
-        val accuracy: Int,
-        val x: Float,
-        val y: Float,
-        val z: Float
-    )
 }
