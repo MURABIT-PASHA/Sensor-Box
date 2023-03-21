@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import '../../../backend/sensor_data.dart';
+import 'package:sensor_box/backend/sensor_data.dart';
+import 'package:sensor_box/ui/widgets/frosted_glass_box.dart';
 
 class WatchSaveSensorScreen extends StatefulWidget {
   final List<String> sensorNames;
@@ -21,12 +21,6 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
   void initState() {
     selectedSensorNames = widget.sensorNames;
     iconStatus = List.filled(widget.sensorNames.length, false);
-    SensorData data = SensorData(interval: Duration(seconds: 2), duration: Duration(seconds: 10));
-    data.getSensorData().listen((event) {print(event);});
-    data.getSensorList().then((value){
-      sensorNames = value;
-    });
-    print(sensorNames);
     super.initState();
   }
 
@@ -34,9 +28,10 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    Color backgroundColor = const Color(0xFF1C1C1E);
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Container(
+        color: backgroundColor,
         height: height,
         width: width,
         padding: const EdgeInsets.only(
@@ -44,45 +39,63 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
           left: 5,
           right: 5,
         ),
-        child: Column(
+        child: Stack(
           children: [
-            SizedBox(
-              width: width,
-              height: height - 70,
-              child: ListView.builder(
-                itemCount: widget.sensorNames.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: Icon(
-                      Icons.save,
-                      color: iconStatus[index] ? Colors.green : Colors.red,
-                    ),
-                    title: Text(
-                      selectedSensorNames[index],
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        iconStatus[index] = !iconStatus[index];
-                      });
-                    },
-                  );
-                },
+            Positioned(
+              top: 5,
+              right: 0,
+              left: 0,
+              child: SizedBox(
+                width: width,
+                height: height,
+                child: ListView.builder(
+                  itemCount: widget.sensorNames.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FrostedGlassBox(
+                      width: width,
+                      height: height / 3,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.save,
+                          color: iconStatus[index] ? Colors.green : Colors.red,
+                        ),
+                        title: Text(
+                          selectedSensorNames[index],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            iconStatus[index] = !iconStatus[index];
+                          });
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
-            Container(
-                padding: const EdgeInsets.only(left: 15, right: 15),
-                width: width,
-                height: 45,
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade800,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10))),
-                    onPressed: () {
-                      //TODO: Start save process
-                    },
-                    child: const Text('Save')))
+            Positioned(
+              bottom: 5,
+              right: 0,
+              left: 0,
+              child: Container(
+                  color: Colors.transparent,
+                  padding: const EdgeInsets.only(left: 15, right: 15),
+                  width: width,
+                  height: 45,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade800,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10))),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (builder) => SensorData()));
+                      },
+                      child: const Text('Save'))),
+            )
           ],
         ),
       ),

@@ -1,42 +1,44 @@
 package com.ktun.edu.tr.sensor_box
 
-import io.flutter.embedding.android.FlutterActivity
-import androidx.annotation.NonNull
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugin.common.MethodChannel
-import android.content.*
+import android.content.Context
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
+import android.os.Bundle
+import androidx.annotation.NonNull
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.GeneratedPluginRegistrant
 
-
-class MainActivity : FlutterActivity() {
-    private val sensorChannel = "com.ktun.edu.tr/sensor"
-    private lateinit var channel: MethodChannel
+class MainActivity: FlutterActivity() {
+    private val methodChannelName: String = "com.ktun.edu.tr/androidMethodChannel"
+    private val eventChannelName: String = "com.ktun.edu.tr/androidEventChannel"
+    private lateinit var methodChannel: MethodChannel
+    private lateinit var eventChannel: EventChannel
     private lateinit var sensorManager: SensorManager
 
-
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine){
         super.configureFlutterEngine(flutterEngine)
-        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, sensorChannel)
-        channel.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "getSensorNames" -> {
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannelName)
+        methodChannel.setMethodCallHandler { methodCall, result ->
+            when(methodCall.method){
+                "getSensorsList" -> {
+                    eventChannel = EventChannel(flutterEngine.dartExecutor.binaryMessenger, eventChannelName)
+                    result.success(getSensorsList())
+                    initSensorEventListener()
+                }
+                "getSensorNamesList" ->{
                     val sensorNames = getSensorNames()
                     result.success(sensorNames)
                 }
-                "getSensorValues" -> {
-                    val sensorValues = getAllSensorValues()
-                    result.success(sensorValues)
-                }
-                else -> {
-                    throw Throwable("Wrong Method Call ")
-                }
+                else -> { }
             }
         }
     }
-
     private fun getSensorNames(): List<String> {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
@@ -46,34 +48,130 @@ class MainActivity : FlutterActivity() {
         }
         return sensorNames
     }
-    private fun getAllSensorValues(): Map<String, Map<String, Any>> {
-        val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
-        val sensorDataMap = mutableMapOf<String, Map<String, Any>>()
+    private fun initSensorEventListener(){
+        eventChannel.setStreamHandler(
+                object :EventChannel.StreamHandler{
+                    override fun onCancel(p0: Any?) {}
 
-        for (sensor in deviceSensors) {
-            println("Sensor name: ")
-            print(sensor.name)
-            sensorManager.getDefaultSensor(sensor.type)?.also {
-                sensorManager.registerListener(
-                    object : SensorEventListener {
-                    override fun onSensorChanged(event: SensorEvent?) {
-                        print("SensorChanged")
-                        if (event != null) {
-                                val sensorDataEntry = mutableMapOf<String, Any>(
-                                    "timestamp" to event.timestamp,
-                                    "accuracy" to event.accuracy,
-                                    "values" to event.values.toList()
-                                )
-                                sensorDataMap[sensor.name] = sensorDataEntry
+                    override fun onListen(p0: Any?, p1: EventChannel.EventSink?) {
+                        if(p1!=null){
+                            sensorManager.getSensorList(Sensor.TYPE_ALL).forEach {
+                                sensorManager.registerListener(MySensorListener(p1),it,SensorManager.SENSOR_DELAY_NORMAL)
+                            }
                         }
                     }
-                    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                        return
+                }
+        )
+    }
+
+    private fun extractSensorInfo(sensor: Sensor): Map<String, String>{
+        return mapOf(
+                "name" to sensor.name,
+                "type" to sensor.type.toString(),
+                "vendorName" to sensor.vendor.toString(),
+                "version" to sensor.version.toString(),
+                "resolution" to sensor.resolution.toString(),
+                "power" to sensor.power.toString(),
+                "maxRange" to sensor.maximumRange.toString(),
+                "minDelay" to (sensor.minDelay.toFloat()/1000000.0).toString(),
+                "reportingMode" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) sensor.reportingMode.toString() else "NA",
+                "maxDelay" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) (sensor.maxDelay.toFloat()/1000000.0).toString() else "NA",
+                "isWakeup" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP) sensor.isWakeUpSensor.toString() else "NA",
+                "isDynamic" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N) sensor.isDynamicSensor.toString() else "NA",
+                "highestDirectReportRateValue" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O) sensor.highestDirectReportRateLevel.toString() else "NA",
+                "fifoReservedEventCount" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT) sensor.fifoReservedEventCount.toString() else "NA",
+                "fifoMaxEventCount" to if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT) sensor.fifoMaxEventCount.toString() else "NA"
+        )
+    }
+
+    private fun getSensorsList(): Map<String, List<Map<String, String>>>{
+        val myMap = mutableMapOf<String, List<Map<String, String>>>()
+        listOf(Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_ACCELEROMETER_UNCALIBRATED, Sensor.TYPE_AMBIENT_TEMPERATURE, Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR, Sensor.TYPE_GRAVITY, Sensor.TYPE_GYROSCOPE, Sensor.TYPE_GYROSCOPE_UNCALIBRATED, Sensor.TYPE_LIGHT, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_MAGNETIC_FIELD, Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED, Sensor.TYPE_PRESSURE, Sensor.TYPE_PRESSURE, Sensor.TYPE_PROXIMITY, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_RELATIVE_HUMIDITY, Sensor.TYPE_STATIONARY_DETECT, Sensor.TYPE_MOTION_DETECT, Sensor.TYPE_LOW_LATENCY_OFFBODY_DETECT).forEach { elem ->
+            val tmp = mutableListOf<Map<String, String>>()
+            when(elem){
+                Sensor.TYPE_ACCELEROMETER_UNCALIBRATED -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
                     }
-                }, it, SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_NORMAL)
+                }
+                Sensor.TYPE_GAME_ROTATION_VECTOR -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_GYROSCOPE_UNCALIBRATED -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.KITKAT){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN_MR2){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_LOW_LATENCY_OFFBODY_DETECT -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_STATIONARY_DETECT -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                Sensor.TYPE_MOTION_DETECT -> {
+                    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.N){
+                        if(sensorManager.getSensorList(elem)!=null){
+                            sensorManager.getSensorList(elem).forEach {
+                                tmp.add(extractSensorInfo(it))
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    if(sensorManager.getSensorList(elem)!=null){
+                        sensorManager.getSensorList(elem).forEach {
+                            tmp.add(extractSensorInfo(it))
+                        }
+                    }
+                }
             }
+            myMap[elem.toString()] = tmp
         }
-        return sensorDataMap
+        return myMap
+        //initSensorEventListener()
     }
 }
