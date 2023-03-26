@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class SensorInfoHolder {
   SensorInfoHolder(
       this.name,
@@ -59,189 +57,42 @@ class SensorInfoHolder {
     }[type];
   }
 
-  List<Widget> displaySensorData() {
-    return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            this.name,
-            style: TextStyle(
-                color: Colors.cyanAccent, fontStyle: FontStyle.italic),
-          ),
-          Text(
-            this.vendorName,
-            style: TextStyle(
-                color: Colors.greenAccent, fontWeight: FontWeight.bold),
-          )
-        ],
-      ),
-      Divider(
-        height: 14.0,
-        color: Colors.black54,
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Type',
-          ),
-          Text(
-            this.type,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Version',
-          ),
-          Text(
-            this.version,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Power',
-          ),
-          Text(
-            '${this.power} mA',
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Resolution',
-          ),
-          Text(
-            '${this.resolution} unit',
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Maximum Range',
-          ),
-          Text(
-            '${this.maxRange} unit',
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Maximum Delay',
-          ),
-          Text(
-            '${this.maxDelay} s',
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Minimum Delay',
-          ),
-          Text(
-            '${this.minDelay} s',
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Reporting Mode',
-          ),
-          Text(
-            <String, String>{
-              '0': 'Continuous',
-              '1': 'On Change',
-              '2': 'One Shot',
-              '3': 'Special Trigger',
-              'NA': 'NA',
-            }[this.reportingMode]!,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Wake Up',
-          ),
-          Text(
-            this.capitalize(this.isWakeup),
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Dynamic',
-          ),
-          Text(
-            this.capitalize(this.isDynamic),
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Highest Direct Report Rate Value',
-          ),
-          Text(
-            <String, String>{
-              '0': 'Unsupported',
-              '1': 'Normal',
-              '2': 'Fast',
-              '3': 'Very Fast',
-              'NA': 'NA',
-            }[this.highestDirectReportRateValue]!,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Fifo Max Event Count',
-          ),
-          Text(
-            this.fifoMaxEventCount,
-          ),
-        ],
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text(
-            'Fifo Reserved Event Count',
-          ),
-          Text(
-            this.fifoReservedEventCount,
-          ),
-        ],
-      )
-    ];
+  Map<String, String> displaySensorData() {
+    return {
+      'Name': this.name,
+      'VendorName': this.vendorName,
+      'Type': this.type,
+      'Version': this.version,
+      'Power': '${this.power} mA',
+      'Resolution': '${this.resolution} unit',
+      'Maximum Range': '${this.maxRange} unit',
+      'Maximum Delay': '${this.maxDelay} s',
+      'Minimum Delay': '${this.minDelay} s',
+      'Reporting Mode': <String, String>{
+        '0': 'Continuous',
+        '1': 'On Change',
+        '2': 'One Shot',
+        '3': 'Special Trigger',
+        'NA': 'NA',
+      }[this.reportingMode]!,
+      'Wake Up': this.capitalize(this.isWakeup),
+      'Dynamic': this.capitalize(this.isDynamic),
+      'Highest Direct Report Rate Value': <String, String>{
+        '0': 'Unsupported',
+        '1': 'Normal',
+        '2': 'Fast',
+        '3': 'Very Fast',
+        'NA': 'NA',
+      }[this.highestDirectReportRateValue]!,
+      'Fifo Max Event Count': this.fifoMaxEventCount,
+      'Fifo Reserved Event Count': this.fifoReservedEventCount,
+    };
   }
 
-  List<Widget> appendThem(List<Widget> myList) {
-    List<Widget> target = this.displaySensorData();
-    myList.forEach((Widget element) {
-      target.add(element);
+  Map<String, String> appendThem(Map<String, String> myMap) {
+    Map<String, String> target = this.displaySensorData();
+    myMap.forEach((key, value) {
+      target[key] = value;
     });
     return target;
   }
@@ -258,49 +109,12 @@ class Accelerometer {
   String x;
   String y;
   String z;
-  Card getCard() {
-    return Card(
-      // Accelerometer
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along X-axis'),
-                Text('${this.x} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Y-axis'),
-                Text('${this.y} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Z-axis'),
-                Text('${this.z} m/s^2'),
-              ],
-            )
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Along X-axis': '${this.x} m/s^2',
+      'Along Y-axis': '${this.y} m/s^2',
+      'Along Z-axis': '${this.z} m/s^2',
+    });
   }
 }
 
@@ -321,70 +135,15 @@ class UncalibratedAccelerometer {
   String estimatedXBias;
   String estimatedYBias;
   String estimatedZBias;
-  Card getCard() {
-    return Card(
-      // Uncalibrated Accelerometer
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('X Uncalibrated'),
-                Text('${this.xUncalib} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Y Uncalibrated'),
-                Text('${this.yUncalib} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Z Uncalibrated'),
-                Text('${this.zUnclaib} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated X Bias'),
-                Text('${this.estimatedXBias} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Y Bias'),
-                Text('${this.estimatedYBias} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Z Bias'),
-                Text('${this.estimatedZBias} m/s^2'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'X Uncalibrated': '${this.xUncalib} m/s^2',
+      'Y Uncalibrated': '${this.yUncalib} m/s^2',
+      'Z Uncalibrated': '${this.zUnclaib} m/s^2',
+      'Estimated X Bias': '${this.estimatedXBias} m/s^2',
+      'Estimated Y Bias': '${this.estimatedYBias} m/s^2',
+      'Estimated Z Bias': '${this.estimatedZBias} m/s^2',
+    });
   }
 }
 
@@ -395,49 +154,12 @@ class Gravity {
   String x;
   String y;
   String z;
-  Card getCard() {
-    return Card(
-      // Gravity
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along X-axis'),
-                Text('${this.x} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Y-axis'),
-                Text('${this.y} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Z-axis'),
-                Text('${this.z} m/s^2'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Along X-axis': '${this.x} m/s^2',
+      'Along Y-axis': '${this.y} m/s^2',
+      'Along Z-axis': '${this.z} m/s^2',
+    });
   }
 }
 
@@ -448,49 +170,12 @@ class LinearAcceleration {
   String x;
   String y;
   String z;
-  Card getCard() {
-    return Card(
-      // Linear Acceleration
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along X-axis'),
-                Text('${this.x} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Y-axis'),
-                Text('${this.y} m/s^2'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Z-axis'),
-                Text('${this.z} m/s^2'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Along X-axis': '${this.x} m/s^2',
+      'Along Y-axis': '${this.y} m/s^2',
+      'Along Z-axis': '${this.z} m/s^2',
+    });
   }
 }
 
@@ -501,49 +186,12 @@ class MagneticField {
   String x;
   String y;
   String z;
-  Card getCard() {
-    return Card(
-      // Magnetic Field
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along X-axis'),
-                Text('${this.x} uT'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Y-axis'),
-                Text('${this.y} uT'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Along Z-axis'),
-                Text('${this.z} uT'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Along X-axis': '${this.x} uT',
+      'Along Y-axis': '${this.y} uT',
+      'Along Z-axis': '${this.z} uT',
+    });
   }
 }
 
@@ -554,49 +202,12 @@ class OrientationSensor {
   String azimuth;
   String pitch;
   String roll;
-  Card getCard() {
-    return Card(
-      // Orientation Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Azimuth'),
-                Text('${this.azimuth}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Pitch'),
-                Text('${this.pitch}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Roll'),
-                Text('${this.roll}'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Azimuth': '${this.azimuth}',
+      'Pitch': '${this.pitch}',
+      'Roll': '${this.roll}',
+    });
   }
 }
 
@@ -608,49 +219,12 @@ class Gyroscope {
   String angularSpeedAroundX;
   String angularSpeedAroundY;
   String angularSpeedAroundZ;
-  Card getCard() {
-    return Card(
-      // Gyroscope
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around X'),
-                Text('${this.angularSpeedAroundX} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around Y'),
-                Text('${this.angularSpeedAroundY} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around Z'),
-                Text('${this.angularSpeedAroundZ} rad/s'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Angular Speed around X': '${this.angularSpeedAroundX} rad/s',
+      'Angular Speed around Y': '${this.angularSpeedAroundY} rad/s',
+      'Angular Speed around Z': '${this.angularSpeedAroundZ} rad/s',
+    });
   }
 }
 
@@ -671,70 +245,15 @@ class UncalibratedGyroscope {
   String estimatedDriftAroundX;
   String estimatedDriftAroundY;
   String estimatedDriftAroundZ;
-  Card getCard() {
-    return Card(
-      // Uncalibrated Gyroscope
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around X'),
-                Text('${this.angularSpeedAroundX} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around Y'),
-                Text('${this.angularSpeedAroundY} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Angular Speed around Z'),
-                Text('${this.angularSpeedAroundZ} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Drift around X'),
-                Text('${this.estimatedDriftAroundX} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Drift around Y'),
-                Text('${this.estimatedDriftAroundY} rad/s'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Drift around Z'),
-                Text('${this.estimatedDriftAroundZ} rad/s'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Angular Speed around X': '${this.angularSpeedAroundX} rad/s',
+      'Angular Speed around Y': '${this.angularSpeedAroundY} rad/s',
+      'Angular Speed around Z': '${this.angularSpeedAroundZ} rad/s',
+      'Estimated Drift around X': '${this.estimatedDriftAroundX} rad/s',
+      'Estimated Drift around Y': '${this.estimatedDriftAroundY} rad/s',
+      'Estimated Drift around Z': '${this.estimatedDriftAroundZ} rad/s',
+    });
   }
 }
 
@@ -743,35 +262,10 @@ class HeartBeat {
   HeartBeat(this.sensor, this.confidence);
   SensorInfoHolder sensor;
   String confidence;
-  Card getCard() {
-    return Card(
-      // HeartBeat Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Confidence'),
-                Text('${this.confidence}'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Confidence': '${this.confidence}',
+    });
   }
 }
 
@@ -780,35 +274,10 @@ class AmbientLight {
   AmbientLight(this.sensor, this.level);
   SensorInfoHolder sensor;
   String level;
-  Card getCard() {
-    return Card(
-      // Ambient Light Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Ambient Light Level'),
-                Text('${this.level} lux'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
-    );
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Ambient Light Level': '${this.level} lux',
+    });
   }
 }
 
@@ -817,34 +286,10 @@ class AtmosphericPressure {
   AtmosphericPressure(this.sensor, this.pressure);
   SensorInfoHolder sensor;
   String pressure;
-  Card getCard() {
-    return Card(
-      // Atmospheric Pressure
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Atmospheric Pressure'),
-                Text('${this.pressure} hPa'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+'Atmospheric Pressure':'${this.pressure} hPa',
+        }
     );
   }
 }
@@ -854,34 +299,10 @@ class Proximity {
   Proximity(this.sensor, this.distance);
   SensorInfoHolder sensor;
   String distance;
-  Card getCard() {
-    return Card(
-      // Proximity Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Distance From Screen'),
-                Text('${this.distance} cm'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Distance From Screen': '${this.distance} cm',
+    }
     );
   }
 }
@@ -896,62 +317,14 @@ class RotationVector {
   String z;
   String someVal;
   String estimatedHeadingAccuracy;
-  Card getCard() {
-    return Card(
-      // Rotation Vector Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('X * Sin(\u{03b8}/2)'),
-                Text('${this.x}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Y * Sin(\u{03b8}/2)'),
-                Text('${this.y}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Z * Sin(\u{03b8}/2)'),
-                Text('${this.z}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Cos(\u{03b8}/2)'),
-                Text('${this.someVal}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Heading Accuracy'),
-                Text('${this.estimatedHeadingAccuracy} rad'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'X * Sin(\u{03b8}/2)': '${this.x}',
+      'Y * Sin(\u{03b8}/2)': '${this.y}',
+      'Z * Sin(\u{03b8}/2)': '${this.z}',
+      'Cos(\u{03b8}/2)': '${this.someVal}',
+      'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
+    }
     );
   }
 }
@@ -966,62 +339,14 @@ class GameRotationVector {
   String z;
   String someVal;
   String estimatedHeadingAccuracy;
-  Card getCard() {
-    return Card(
-      // Game Rotation Vector Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('X * Sin(\u{03b8}/2)'),
-                Text('${this.x}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Y * Sin(\u{03b8}/2)'),
-                Text('${this.y}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Z * Sin(\u{03b8}/2)'),
-                Text('${this.z}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Cos(\u{03b8}/2)'),
-                Text('${this.someVal}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Heading Accuracy'),
-                Text('${this.estimatedHeadingAccuracy} rad'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'X * Sin(\u{03b8}/2)': '${this.x}',
+      'Y * Sin(\u{03b8}/2)': '${this.y}',
+      'Z * Sin(\u{03b8}/2)': '${this.z}',
+      'Cos(\u{03b8}/2)': '${this.someVal}',
+      'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
+    }
     );
   }
 }
@@ -1036,62 +361,14 @@ class GeoMagneticRotationVector {
   String z;
   String someVal;
   String estimatedHeadingAccuracy;
-  Card getCard() {
-    return Card(
-      // Geomagnetic Rotation Vector Sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('X * Sin(\u{03b8}/2)'),
-                Text('${this.x}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Y * Sin(\u{03b8}/2)'),
-                Text('${this.y}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Z * Sin(\u{03b8}/2)'),
-                Text('${this.z}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Cos(\u{03b8}/2)'),
-                Text('${this.someVal}'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Estimated Heading Accuracy'),
-                Text('${this.estimatedHeadingAccuracy} rad'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'X * Sin(\u{03b8}/2)': '${this.x}',
+      'Y * Sin(\u{03b8}/2)': '${this.y}',
+      'Z * Sin(\u{03b8}/2)': '${this.z}',
+      'Cos(\u{03b8}/2)': '${this.someVal}',
+      'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
+    }
     );
   }
 }
@@ -1101,34 +378,10 @@ class RelativeHumidity {
   RelativeHumidity(this.sensor, this.humidity);
   SensorInfoHolder sensor;
   String humidity;
-  Card getCard() {
-    return Card(
-      // Relative Humidity
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Relative Air Humidity'),
-                Text('${this.humidity} %'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Relative Air Humidity': '${this.humidity} %',
+    }
     );
   }
 }
@@ -1138,34 +391,10 @@ class AmbientRoomTemperature {
   AmbientRoomTemperature(this.sensor, this.temperature);
   SensorInfoHolder sensor;
   String temperature;
-  Card getCard() {
-    return Card(
-      // Gravity
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Temperature'),
-                Text('${this.temperature} C'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Temperature': '${this.temperature} C',
+    }
     );
   }
 }
@@ -1180,34 +409,10 @@ class LowLatencyOffBodyDetect {
     return this.offBodyState == '1.0' ? 'Device on-body' : 'Device off-body';
   }
 
-  Card getCard() {
-    return Card(
-      // Low latency off body detect sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Off Body State'),
-                Text('${getStateText()}'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Off Body State': '${getStateText()}',
+    }
     );
   }
 }
@@ -1224,34 +429,10 @@ class MotionDetect {
         : 'Device not in Motion';
   }
 
-  Card getCard() {
-    return Card(
-      // Motion detect sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Motion Detection'),
-                Text('${getStateText()}'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Motion Detection': '${getStateText()}',
+    }
     );
   }
 }
@@ -1268,34 +449,10 @@ class StationaryDetect {
         : 'Device not in Stationary State';
   }
 
-  Card getCard() {
-    return Card(
-      // Motion detect sensor
-      margin: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 4.0, right: 4.0),
-      elevation: 8.0,
-      child: Container(
-        child: Column(
-          children: this.sensor.appendThem([
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Motion Detection'),
-                Text('${getStateText()}'),
-              ],
-            ),
-          ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 0.7,
-            style: BorderStyle.solid,
-          ),
-        ),
-        padding:
-            EdgeInsets.only(left: 10.0, right: 10.0, top: 12.0, bottom: 12.0),
-      ),
+  Map<String, String> getMap() {
+    return this.sensor.appendThem({
+      'Motion Detection': '${getStateText()}',
+    }
     );
   }
 }

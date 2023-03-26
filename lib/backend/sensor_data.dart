@@ -180,37 +180,37 @@ class _SensorMainState extends State<SensorData> {
             break;
           case '5':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listAmbientLight.add(AmbientLight(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '6':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listAtmosphericPressure.add(AtmosphericPressure(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '8':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listProximity.add(Proximity(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '11':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listRotationVector.add(RotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
@@ -219,12 +219,12 @@ class _SensorMainState extends State<SensorData> {
                     'NA',
                     'NA',
                     'NA'));
-              });
+              }
             }
             break;
           case '15':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listGameRotationVector.add(GameRotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
@@ -233,12 +233,12 @@ class _SensorMainState extends State<SensorData> {
                     'NA',
                     'NA',
                     'NA'));
-              });
+              }
             }
             break;
           case '20':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listGeoMagneticRotationVector.add(GeoMagneticRotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
@@ -247,37 +247,37 @@ class _SensorMainState extends State<SensorData> {
                     'NA',
                     'NA',
                     'NA'));
-              });
+              }
             }
             break;
           case '12':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listRelativeHumidity.add(RelativeHumidity(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '13':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listAmbientRoomTemperature.add(AmbientRoomTemperature(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '29':
             if (value.isNotEmpty) {
-              value.forEach((dynamic element) {
+              for (var element in value) {
                 _listStationaryDetect.add(StationaryDetect(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
-              });
+              }
             }
             break;
           case '30':
@@ -582,9 +582,9 @@ class _SensorMainState extends State<SensorData> {
 
   void _onError(dynamic error) {} // not handling errors yet :)
 
-  List<Widget> buildUI() {
+  List<Map<String,String>> getAllSensorsInfo() {
     // main UI rendering operation is performed here, be careful
-    List<Widget> tmpUI = [];
+    List<Map<String,String>> tmpUI = [];
     for (var elem in <List<dynamic>>[
       _listAccelerometer,
       _listUncalibratedAccelerometer,
@@ -608,7 +608,7 @@ class _SensorMainState extends State<SensorData> {
       _listLowLatencyOffBodyDetect,
     ]) {
       for (var item in elem) {
-        tmpUI.add(item.getCard());
+        tmpUI.add(item.getMap());
       }
     }
     return tmpUI;
@@ -625,7 +625,15 @@ class _SensorMainState extends State<SensorData> {
         ),
         backgroundColor: Colors.cyanAccent,
       ),
-      body: ListView(padding: const EdgeInsets.all(6.0), children: buildUI()),
-    );
+      body: Container(
+        child: ListView.builder(
+          itemCount: getAllSensorsInfo().length,
+          itemBuilder: (BuildContext context, int index) {
+            String values = "";
+            getAllSensorsInfo()[index].forEach((key, value) { values = key; });
+            return Text(values);
+          },
+      ),
+    ),);
   }
 }

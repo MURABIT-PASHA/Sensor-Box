@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sensor_box/backend/sensor_data.dart';
-import 'package:sensor_box/ui/screens/watch/watch_record_screen.dart';
+import 'package:sensor_box/ui/screens/watch/watch_sensor_timer.dart';
 import 'package:sensor_box/ui/widgets/frosted_glass_box.dart';
 
 class WatchSaveSensorScreen extends StatefulWidget {
@@ -90,10 +90,16 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10))),
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (builder) => WatchRecordScreen()));
+                        if(lastCheck().isEmpty){
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("You didn't chose anything")));
+                        }
+                        else{
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (builder) => WatchSensorTimerScreen(sensorNames: lastCheck(),)));
+                        }
+
                       },
                       child: const Text('Save'))),
             ),
@@ -114,5 +120,14 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
         ),
       ),
     );
+  }
+  List<String> lastCheck(){
+    List<String> selectedSensors = [];
+    for(int i=0; i<iconStatus.length;i++){
+      if(iconStatus[i]){
+        selectedSensors.add(widget.sensorNames[i]);
+      }
+    }
+    return selectedSensors;
   }
 }
