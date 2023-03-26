@@ -20,6 +20,8 @@ dependencies:
   scoped_model: ^2.0.0
   wear: ^1.1.0
   syncfusion_flutter_charts: ^20.4.54
+  lottie: ^2.3.0
+  csv: ^5.0.1
 
 dev_dependencies:
   flutter_test:
@@ -40,6 +42,7 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/lottie_anims/
 
   fonts:
     - family: Poppins

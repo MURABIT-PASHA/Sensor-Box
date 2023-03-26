@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sensor_box/backend/sensor_data.dart';
+import 'package:sensor_box/ui/screens/watch/watch_record_screen.dart';
 import 'package:sensor_box/ui/widgets/frosted_glass_box.dart';
 
 class WatchSaveSensorScreen extends StatefulWidget {
@@ -92,10 +93,23 @@ class _WatchSaveSensorScreenState extends State<WatchSaveSensorScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (builder) => SensorData()));
+                                builder: (builder) => WatchRecordScreen()));
                       },
                       child: const Text('Save'))),
-            )
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
