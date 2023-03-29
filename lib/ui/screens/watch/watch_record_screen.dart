@@ -2,9 +2,12 @@ import 'dart:async';
 
 import "package:flutter/material.dart";
 import 'package:lottie/lottie.dart';
+import 'package:sensor_box/backend/sensor_data.dart';
 
 class WatchRecordScreen extends StatefulWidget {
-  const WatchRecordScreen({Key? key}) : super(key: key);
+  final Duration duration;
+  final List<String> sensorNames;
+  const WatchRecordScreen({Key? key, required this.duration, required this.sensorNames}) : super(key: key);
 
   @override
   State<WatchRecordScreen> createState() => _WatchRecordScreenState();
@@ -12,21 +15,33 @@ class WatchRecordScreen extends StatefulWidget {
 
 class _WatchRecordScreenState extends State<WatchRecordScreen> {
   late Timer _timer;
+  late Timer _writeTimer;
   int _seconds = 0;
 
   @override
   void initState() {
     super.initState();
+    SensorData sensorData = SensorData();
+    sensorData.initializeSensors(widget.sensorNames);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
       });
     });
+    _writeTimer = Timer.periodic(widget.duration, (timer) {
+      setState(() {
+        //sensorData.getSensorsInfo();
+        sensorData.writeData(DateTime.now());
+        // sensorData.getSensorsInfo().forEach((element) {element.forEach((key, value) {print("$key: $value");}); });
+      });
+    });
+
   }
 
   @override
   void dispose() {
     _timer.cancel();
+    _writeTimer.cancel();
     super.dispose();
   }
 

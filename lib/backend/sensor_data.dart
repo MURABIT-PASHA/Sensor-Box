@@ -1,35 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
 import 'sensor_info_holder.dart';
 
-
-class SensorData extends StatefulWidget {
-  const SensorData({super.key});
-
-  @override
-  State<SensorData> createState() => _SensorMainState();
-}
-
-SensorInfoHolder getMeAnInstanceOfSensorInfoHolder(Map<String, String> data) {
-  return SensorInfoHolder(
-      data['name']!,
-      data['type']!,
-      data['vendorName']!,
-      data['version']!,
-      data['power']!,
-      data['resolution']!,
-      data['maxRange']!,
-      data['maxDelay']!,
-      data['minDelay']!,
-      data['reportingMode']!,
-      data['isWakeup']!,
-      data['isDynamic']!,
-      data['highestDirectReportRateValue']!,
-      data['fifoMaxEventCount']!,
-      data['fifoReservedEventCount']!);
-} // gets an instance of SensorInfoHolder class with required data stored, which is supplied to the function in form of a map/ dictionary
-
-class _SensorMainState extends State<SensorData> {
+class SensorData {
   static const String _methodChannelName =
       'com.ktun.edu.tr/androidMethodChannel'; // keep it unique
   static const String _eventChannelName =
@@ -37,6 +12,7 @@ class _SensorMainState extends State<SensorData> {
   static MethodChannel _methodChannel = const MethodChannel(_methodChannelName);
   static EventChannel _eventChannel = const EventChannel(_eventChannelName);
   bool _isFirstUIBuildDone = false;
+  List<dynamic> sensorList = [];
   List<Accelerometer> _listAccelerometer = [];
   List<UncalibratedAccelerometer> _listUncalibratedAccelerometer = [];
   List<Gravity> _listGravity = [];
@@ -58,11 +34,30 @@ class _SensorMainState extends State<SensorData> {
   List<MotionDetect> _listMotionDetect = [];
   List<StationaryDetect> _listStationaryDetect = [];
 
+  SensorInfoHolder getMeAnInstanceOfSensorInfoHolder(Map<String, String> data) {
+    return SensorInfoHolder(
+        data['name']!,
+        data['type']!,
+        data['vendorName']!,
+        data['version']!,
+        data['power']!,
+        data['resolution']!,
+        data['maxRange']!,
+        data['maxDelay']!,
+        data['minDelay']!,
+        data['reportingMode']!,
+        data['isWakeup']!,
+        data['isDynamic']!,
+        data['highestDirectReportRateValue']!,
+        data['fifoMaxEventCount']!,
+        data['fifoReservedEventCount']!);
+  } // gets an instance of SensorInfoHolder class with required data stored, which is supplied to the function in form of a map/ dictionary
+
   Future<void> getSensorsList() async {
     Map<String, List<dynamic>> sensorCount;
     try {
       Map<dynamic, dynamic> tmp =
-      await _methodChannel.invokeMethod('getSensorsList');
+          await _methodChannel.invokeMethod('getSensorsList');
       sensorCount = Map<String, List<dynamic>>.from(tmp);
       sensorCount.forEach((String key, List<dynamic> value) {
         switch (key) {
@@ -305,16 +300,10 @@ class _SensorMainState extends State<SensorData> {
         }
       });
     } on PlatformException {}
-    setState(() {
-      // UI rebuilding is done here
-      _isFirstUIBuildDone = true;
-    });
+    _isFirstUIBuildDone = true;
   }
 
-  @override
-  void initState() {
-    // stateful widget initialization done here
-    super.initState();
+  SensorData() {
     _methodChannel = const MethodChannel(_methodChannelName);
     _eventChannel = const EventChannel(_eventChannelName);
     getSensorsList();
@@ -337,11 +326,9 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listAccelerometer) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-            });
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
           }
         }
         break;
@@ -349,119 +336,107 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listUncalibratedAccelerometer) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.xUncalib = sensorFeed![0];
-              item.yUncalib = sensorFeed[1];
-              item.zUnclaib = sensorFeed[2];
-              item.estimatedXBias = sensorFeed[3];
-              item.estimatedYBias = sensorFeed[4];
-              item.estimatedZBias = sensorFeed[5];
-            });
+
+            item.xUncalib = sensorFeed![0];
+            item.yUncalib = sensorFeed[1];
+            item.zUnclaib = sensorFeed[2];
+            item.estimatedXBias = sensorFeed[3];
+            item.estimatedYBias = sensorFeed[4];
+            item.estimatedZBias = sensorFeed[5];
           }
         }
         break;
       case '9':
-        _listGravity.forEach((item) {
+        for (var item in _listGravity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-            });
+
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
           }
-        });
+        }
         break;
       case '10':
-        _listLinearAcceleration.forEach((item) {
+        for (var item in _listLinearAcceleration) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-            });
+
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
           }
-        });
+        }
         break;
       case '2':
-        _listMagneticField.forEach((item) {
+        for (var item in _listMagneticField) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-            });
+
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
           }
-        });
+        }
         break;
       case '3':
-        _listOrientationSensor.forEach((item) {
+        for (var item in _listOrientationSensor) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.azimuth = sensorFeed![0];
-              item.pitch = sensorFeed[1];
-              item.roll = sensorFeed[2];
-            });
+
+            item.azimuth = sensorFeed![0];
+            item.pitch = sensorFeed[1];
+            item.roll = sensorFeed[2];
           }
-        });
+        }
         break;
       case '4':
-        _listGyroscope.forEach((item) {
+        for (var item in _listGyroscope) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.angularSpeedAroundX = sensorFeed![0];
-              item.angularSpeedAroundY = sensorFeed[1];
-              item.angularSpeedAroundZ = sensorFeed[2];
-            });
+            item.angularSpeedAroundX = sensorFeed![0];
+            item.angularSpeedAroundY = sensorFeed[1];
+            item.angularSpeedAroundZ = sensorFeed[2];
           }
-        });
+        }
         break;
       case '16':
-        _listUncalibratedGyroscope.forEach((item) {
+        for (var item in _listUncalibratedGyroscope) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.angularSpeedAroundX = sensorFeed![0];
-              item.angularSpeedAroundY = sensorFeed[1];
-              item.angularSpeedAroundZ = sensorFeed[2];
-              item.estimatedDriftAroundX = sensorFeed[3];
-              item.estimatedDriftAroundY = sensorFeed[4];
-              item.estimatedDriftAroundZ = sensorFeed[5];
-            });
+
+            item.angularSpeedAroundX = sensorFeed![0];
+            item.angularSpeedAroundY = sensorFeed[1];
+            item.angularSpeedAroundZ = sensorFeed[2];
+            item.estimatedDriftAroundX = sensorFeed[3];
+            item.estimatedDriftAroundY = sensorFeed[4];
+            item.estimatedDriftAroundZ = sensorFeed[5];
           }
-        });
+        }
         break;
       case '31':
-        _listHeartBeat.forEach((item) {
+        for (var item in _listHeartBeat) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.confidence = sensorFeed![0];
-            });
+
+            item.confidence = sensorFeed![0];
           }
-        });
+        }
         break;
       case '5':
-        _listAmbientLight.forEach((item) {
+        for (var item in _listAmbientLight) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.level = sensorFeed![0];
-            });
+
+            item.level = sensorFeed![0];
           }
-        });
+        }
         break;
       case '6':
         for (var item in _listAtmosphericPressure) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.pressure = sensorFeed![0];
-            });
+            item.pressure = sensorFeed![0];
           }
         }
         break;
@@ -469,9 +444,7 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listProximity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.distance = sensorFeed![0];
-            });
+            item.distance = sensorFeed![0];
           }
         }
         break;
@@ -479,16 +452,14 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-              if (sensorFeed.length == 4) {
-                item.someVal = sensorFeed[3];
-              } else if (sensorFeed.length == 5) {
-                item.estimatedHeadingAccuracy = sensorFeed[4];
-              }
-            });
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
+            if (sensorFeed.length == 4) {
+              item.someVal = sensorFeed[3];
+            } else if (sensorFeed.length == 5) {
+              item.estimatedHeadingAccuracy = sensorFeed[4];
+            }
           }
         }
         break;
@@ -496,15 +467,14 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listGameRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-              if (sensorFeed.length == 4)
-                item.someVal = sensorFeed[3];
-              else if (sensorFeed.length == 5)
-                item.estimatedHeadingAccuracy = sensorFeed[4];
-            });
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
+            if (sensorFeed.length == 4) {
+              item.someVal = sensorFeed[3];
+            } else if (sensorFeed.length == 5) {
+              item.estimatedHeadingAccuracy = sensorFeed[4];
+            }
           }
         }
         break;
@@ -512,16 +482,14 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listGeoMagneticRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.x = sensorFeed![0];
-              item.y = sensorFeed[1];
-              item.z = sensorFeed[2];
-              if (sensorFeed.length == 4) {
-                item.someVal = sensorFeed[3];
-              } else if (sensorFeed.length == 5) {
-                item.estimatedHeadingAccuracy = sensorFeed[4];
-              }
-            });
+            item.x = sensorFeed![0];
+            item.y = sensorFeed[1];
+            item.z = sensorFeed[2];
+            if (sensorFeed.length == 4) {
+              item.someVal = sensorFeed[3];
+            } else if (sensorFeed.length == 5) {
+              item.estimatedHeadingAccuracy = sensorFeed[4];
+            }
           }
         }
         break;
@@ -529,9 +497,8 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listRelativeHumidity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.humidity = sensorFeed![0];
-            });
+
+            item.humidity = sensorFeed![0];
           }
         }
         break;
@@ -539,9 +506,8 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listAmbientRoomTemperature) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.temperature = sensorFeed![0];
-            });
+
+            item.temperature = sensorFeed![0];
           }
         }
         break;
@@ -549,9 +515,8 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listStationaryDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.isImmobile = sensorFeed![0];
-            });
+
+            item.isImmobile = sensorFeed![0];
           }
         }
         break;
@@ -559,9 +524,8 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listMotionDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.isInMotion = sensorFeed![0];
-            });
+
+            item.isInMotion = sensorFeed![0];
           }
         }
         break;
@@ -569,9 +533,8 @@ class _SensorMainState extends State<SensorData> {
         for (var item in _listLowLatencyOffBodyDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
-            setState(() {
-              item.offBodyState = sensorFeed![0];
-            });
+
+            item.offBodyState = sensorFeed![0];
           }
         }
         break;
@@ -582,9 +545,9 @@ class _SensorMainState extends State<SensorData> {
 
   void _onError(dynamic error) {} // not handling errors yet :)
 
-  List<Map<String,String>> getAllSensorsInfo() {
+  List<Map<String, String>> getAllSensorsInfo() {
     // main UI rendering operation is performed here, be careful
-    List<Map<String,String>> tmpUI = [];
+    List<Map<String, String>> tmpUI = [];
     for (var elem in <List<dynamic>>[
       _listAccelerometer,
       _listUncalibratedAccelerometer,
@@ -614,26 +577,119 @@ class _SensorMainState extends State<SensorData> {
     return tmpUI;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // well this is one pretty much compulsory function, which I'm overriding here
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Sensor',
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.cyanAccent,
-      ),
-      body: Container(
-        child: ListView.builder(
-          itemCount: getAllSensorsInfo().length,
-          itemBuilder: (BuildContext context, int index) {
-            String values = "";
-            getAllSensorsInfo()[index].forEach((key, value) { values = key; });
-            return Text(values);
-          },
-      ),
-    ),);
+  Future<bool> writeData(DateTime timestamp) async {
+    //TODO: Add csv write system
+    List<Map<String, String>> tmpUI = [];
+    tmpUI = getSensorsInfo();
+    if (tmpUI.isNotEmpty) {
+      print("Is not Empty");
+      for (var sensor in tmpUI){
+        final String csvFile = "${sensor["name"]}.csv";
+
+        final File file = File(csvFile);
+        List<List<dynamic>> csvRows = [];
+        if (await file.exists()) {
+          final String contents = await file.readAsString();
+          csvRows = CsvToListConverter().convert(contents);
+        }
+        sensor["timestamp"] = timestamp.millisecondsSinceEpoch.toString();
+        final List<dynamic> newRow = [
+          sensor,
+        ];
+        final IOSink sink = file.openWrite(mode: FileMode.append);
+        final List<String> newRowStringList =
+        newRow.map((e) => e.toString()).toList();
+
+        if (csvRows.isEmpty) {
+          sink.writeln("Timestamp,Sender,Recipient,Message");
+        }
+        if (csvRows.isNotEmpty &&
+            csvRows.last.join(",") != newRowStringList.join(",")) {
+          sink.writeln(newRowStringList.join(","));
+        } else {
+          sink.writeln();
+        }
+        await sink.flush();
+        await sink.close();
+      }
+    } else {
+      print("Empty");
+      return false;
+    }
+    return true;
+  }
+
+  void initializeSensors(List<String> sensorNames){
+    if(sensorNames.isNotEmpty){
+      for (String name in sensorNames){
+        switch(name) {
+          case "Goldfish 3-axis Accelerometer":
+            sensorList.add(_listAccelerometer);
+            break;
+          case "Goldfish 3-axis Gyroscope":
+            sensorList.add(_listGyroscope);
+            break;
+          case "Goldfish 3-axis Magnetic field sensor":
+            sensorList.add(_listMagneticField);
+            break;
+          case "Goldfish Orientation sensor":
+            sensorList.add(_listOrientationSensor);
+            break;
+          case "Goldfish Ambient Temperature sensor":
+            sensorList.add(_listAmbientRoomTemperature);
+            break;
+          case "Goldfish Proximity sensor":
+            sensorList.add(_listProximity);
+            break;
+          case "Goldfish Light sensor":
+            sensorList.add(_listAmbientLight);
+            break;
+          case "Goldfish Pressure sensor":
+            sensorList.add(_listAtmosphericPressure);
+            break;
+          case "Goldfish Humidity sensor":
+            sensorList.add(_listRelativeHumidity);
+            break;
+          case "Goldfish 3-axis Magnetic field sensor (uncalibrated)":
+            sensorList.add(_listMagneticField);
+            break;
+          case "Goldfish 3-axis Gyroscope (uncalibrated)":
+            sensorList.add(_listUncalibratedGyroscope);
+            break;
+          case "Goldfish Heart rate sensor":
+            sensorList.add(_listHeartBeat);
+            break;
+          case "Goldfish wrist tilt gesture sensor":
+            sensorList.add(_listStationaryDetect);
+            break;
+          case "Game Rotation Vector Sensor":
+            sensorList.add(_listGameRotationVector);
+            break;
+          case "GeoMag Rotation Vector Sensor":
+            sensorList.add(_listGeoMagneticRotationVector);
+            break;
+          case "Gravity Sensor":
+            sensorList.add(_listGravity);
+            break;
+          case "Linear Acceleration Sensor":
+            sensorList.add(_listLinearAcceleration);
+            break;
+          case "Rotation Vector Sensor":
+            sensorList.add(_listRotationVector);
+            break;
+          default:
+        }
+      }
+    }
+  }
+
+  List<Map<String, String>> getSensorsInfo() {
+    List<Map<String, String>> tmpUI = [];
+    for (var elem in sensorList) {
+      for (var item in elem) {
+        tmpUI.add(item.getMap());
+      }
+    }
+    return tmpUI;
   }
 }

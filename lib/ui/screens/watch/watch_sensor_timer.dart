@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:sensor_box/ui/screens/watch/watch_record_screen.dart';
 import 'package:sensor_box/ui/widgets/frosted_glass_box.dart';
-import '../screen_controller.dart';
 
 class WatchSensorTimerScreen extends StatefulWidget {
   final List<String> sensorNames;
-  const WatchSensorTimerScreen({Key? key, required this.sensorNames}) : super(key: key);
+  const WatchSensorTimerScreen({Key? key, required this.sensorNames})
+      : super(key: key);
 
   @override
   State<WatchSensorTimerScreen> createState() => _WatchSensorTimerScreenState();
 }
 
 class _WatchSensorTimerScreenState extends State<WatchSensorTimerScreen> {
-
+  Duration _duration = const Duration(milliseconds: 0);
+  int _durationDelay = 0;
+  String _durationType = "ms";
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -38,63 +41,66 @@ class _WatchSensorTimerScreenState extends State<WatchSensorTimerScreen> {
                       width: width - 70,
                       height: 30,
                       child: TextField(
+                        onChanged: (value) {
+                          try {
+                            _durationDelay = int.parse(value);
+                          } catch (exception) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Wrong argument")));
+                          }
+                        },
                         textAlignVertical: TextAlignVertical.bottom,
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.white),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          hintText: "Time delay",
-                          hintStyle: const TextStyle(color: Colors.white12, fontStyle: FontStyle.italic)
-                        ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.white),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            hintText: "Time delay",
+                            hintStyle: const TextStyle(
+                                color: Colors.white12,
+                                fontStyle: FontStyle.italic)),
                         keyboardType: TextInputType.number,
                       ),
                     ),
                     DropdownButton(
-                      items: [
-                        DropdownMenuItem(child: Text("ms"),value: "ms",),
-                        DropdownMenuItem(child: Text("s"),value: "s",)
-                      ],
-                      onChanged: (value){
-                        print(value);
-                      }
-                  ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: "ms",
+                            child: Text("ms"),
+                          ),
+                          DropdownMenuItem(
+                            value: "s",
+                            child: Text("s"),
+                          )
+                        ],
+                        onChanged: (value) {
+                          _durationType = value ?? "ms";
+                        }),
                   ],
                 ),
               ),
-
             ),
             FrostedGlassBox(
               width: width - 10,
               height: height / 3 - 5,
               child: ListTile(
                 leading: const Icon(
-                  Icons.bar_chart_rounded,
+                  Icons.start,
                   color: Colors.white,
                 ),
                 title: const Text(
-                  "View sensor",
+                  "Start",
                   style: TextStyle(color: Colors.white),
                 ),
                 onTap: () {
-
-                },
-              ),
-            ),
-            FrostedGlassBox(
-              width: width - 10,
-              height: height / 3 - 5,
-              child: ListTile(
-                leading: const Icon(
-                  Icons.info,
-                  color: Colors.white,
-                ),
-                title: const Text(
-                  "Credits",
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (builder) => WatchRecordScreen(
+                          duration: _duration, sensorNames: widget.sensorNames),
+                    ),
+                  );
                 },
               ),
             ),
@@ -102,5 +108,22 @@ class _WatchSensorTimerScreenState extends State<WatchSensorTimerScreen> {
         ),
       ),
     );
+  }
+
+  void lastCheck() {
+    if (_durationDelay == 0) {
+      _durationDelay = 1;
+      _duration = Duration(seconds: _durationDelay);
+    }
+    switch (_durationType) {
+      case "ms":
+        _duration = Duration(milliseconds: _durationDelay);
+        break;
+      case "s":
+        _duration = Duration(seconds: _durationDelay);
+        break;
+      default:
+        _duration = const Duration(seconds: 1);
+    }
   }
 }
