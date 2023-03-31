@@ -16,6 +16,7 @@ class WatchRecordScreen extends StatefulWidget {
 class _WatchRecordScreenState extends State<WatchRecordScreen> {
   late Timer _timer;
   late Timer _writeTimer;
+  final DateTime _currentTime = DateTime.now();
   int _seconds = 0;
 
   @override
@@ -30,9 +31,7 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
     });
     _writeTimer = Timer.periodic(widget.duration, (timer) {
       setState(() {
-        //sensorData.getSensorsInfo();
-        sensorData.writeData(DateTime.now());
-        // sensorData.getSensorsInfo().forEach((element) {element.forEach((key, value) {print("$key: $value");}); });
+        sensorData.writeData(DateTime.now(),_currentTime);
       });
     });
 

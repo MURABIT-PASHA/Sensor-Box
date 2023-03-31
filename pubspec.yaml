@@ -22,6 +22,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.4.54
   lottie: ^2.3.0
   csv: ^5.0.1
+  path_provider: ^2.0.14
 
 dev_dependencies:
   flutter_test:

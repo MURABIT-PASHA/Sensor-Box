@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
+import 'file_saver.dart';
 import 'sensor_info_holder.dart';
 
 class SensorData {
@@ -577,46 +578,9 @@ class SensorData {
     return tmpUI;
   }
 
-  Future<bool> writeData(DateTime timestamp) async {
-    //TODO: Add csv write system
-    List<Map<String, String>> tmpUI = [];
-    tmpUI = getSensorsInfo();
-    if (tmpUI.isNotEmpty) {
-      print("Is not Empty");
-      for (var sensor in tmpUI){
-        final String csvFile = "${sensor["name"]}.csv";
-
-        final File file = File(csvFile);
-        List<List<dynamic>> csvRows = [];
-        if (await file.exists()) {
-          final String contents = await file.readAsString();
-          csvRows = CsvToListConverter().convert(contents);
-        }
-        sensor["timestamp"] = timestamp.millisecondsSinceEpoch.toString();
-        final List<dynamic> newRow = [
-          sensor,
-        ];
-        final IOSink sink = file.openWrite(mode: FileMode.append);
-        final List<String> newRowStringList =
-        newRow.map((e) => e.toString()).toList();
-
-        if (csvRows.isEmpty) {
-          sink.writeln("Timestamp,Sender,Recipient,Message");
-        }
-        if (csvRows.isNotEmpty &&
-            csvRows.last.join(",") != newRowStringList.join(",")) {
-          sink.writeln(newRowStringList.join(","));
-        } else {
-          sink.writeln();
-        }
-        await sink.flush();
-        await sink.close();
-      }
-    } else {
-      print("Empty");
-      return false;
-    }
-    return true;
+  Future<bool> writeData(DateTime timestamp, DateTime firstTime) async {
+    FileSaver file = FileSaver();
+    return await file.saveData(getSensorsInfo(), timestamp, firstTime);
   }
 
   void initializeSensors(List<String> sensorNames){
