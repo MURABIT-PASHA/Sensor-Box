@@ -7,14 +7,13 @@ class ScreenController extends State<Pathfinder> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-      debugPrint('Ana cihaz ekran genişliği: ${constraints.maxWidth}');
-
-      if (constraints.maxWidth < 300) {
-        return WatchView(this);
-      } else {
-        return PhoneView(this);
-      }
-    });
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (constraints.maxWidth < 300) {
+          return WatchView(this);
+        } else {
+          return PhoneView(this);
+        }
+      },
+    );
   }
 }

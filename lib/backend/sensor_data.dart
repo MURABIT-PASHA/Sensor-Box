@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
 import 'file_saver.dart';
 import 'sensor_info_holder.dart';

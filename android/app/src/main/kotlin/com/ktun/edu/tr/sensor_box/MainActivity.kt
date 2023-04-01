@@ -4,13 +4,11 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
-import android.os.Bundle
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity: FlutterActivity() {
     private val methodChannelName: String = "com.ktun.edu.tr/androidMethodChannel"
@@ -19,25 +17,31 @@ class MainActivity: FlutterActivity() {
     private lateinit var eventChannel: EventChannel
     private lateinit var sensorManager: SensorManager
 
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine){
+    private fun isWearable(): Boolean {
+        return resources.configuration.isScreenRound
+    }
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        GeneratedPluginRegistrant.registerWith(flutterEngine)
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannelName)
-        methodChannel.setMethodCallHandler { methodCall, result ->
-            when(methodCall.method){
-                "getSensorsList" -> {
-                    eventChannel = EventChannel(flutterEngine.dartExecutor.binaryMessenger, eventChannelName)
-                    result.success(getSensorsList())
-                    initSensorEventListener()
+            sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            methodChannel =
+                MethodChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannelName)
+            methodChannel.setMethodCallHandler { methodCall, result ->
+                when (methodCall.method) {
+                    "getSensorsList" -> {
+                        eventChannel = EventChannel(
+                            flutterEngine.dartExecutor.binaryMessenger,
+                            eventChannelName
+                        )
+                        result.success(getSensorsList())
+                        initSensorEventListener()
+                    }
+                    "getSensorNamesList" -> {
+                        val sensorNames = getSensorNames()
+                        result.success(sensorNames)
+                    }
+                    else -> {}
                 }
-                "getSensorNamesList" ->{
-                    val sensorNames = getSensorNames()
-                    result.success(sensorNames)
-                }
-                else -> { }
             }
-        }
     }
     private fun getSensorNames(): List<String> {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager

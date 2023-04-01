@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sensor_box/ui/screens/phone/phone_splash_screen.dart';
 import '../screen_controller.dart';
 
-/// View for [DailyForecastRoute] for phone-sized devices.
 class PhoneView extends StatelessWidget {
   final ScreenController state;
 
