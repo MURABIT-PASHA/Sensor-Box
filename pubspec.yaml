@@ -1,5 +1,5 @@
 name: sensor_box
-description: A new Flutter project.
+description: A wear sensor project.
 
 publish_to: 'none'
 
@@ -19,7 +19,6 @@ dependencies:
   scoped_model: ^2.0.0
   wear: ^1.1.0
   syncfusion_flutter_charts: ^20.4.54
-  lottie: ^2.3.0
   path_provider: ^2.0.14
 
 dev_dependencies:
@@ -41,7 +40,6 @@ flutter:
 
   assets:
     - assets/icons/
-    - assets/lottie_anims/
 
   fonts:
     - family: Poppins

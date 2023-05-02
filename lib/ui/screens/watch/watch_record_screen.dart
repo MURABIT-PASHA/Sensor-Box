@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import "package:flutter/material.dart";
-import 'package:lottie/lottie.dart';
 import 'package:sensor_box/backend/sensor_data.dart';
 
 class WatchRecordScreen extends StatefulWidget {
@@ -74,42 +73,27 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
         alignment: Alignment.center,
         width: width,
         height: height,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 0,
-              right: 0,
-              left: 0,
-              bottom: 0,
-              child: Lottie.asset('assets/lottie_anims/counter.json'),
-            ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: 0,
-              child: GestureDetector(
-                onTap: _onTap,
-                child: Container(
-                  margin: const EdgeInsets.all(50),
-                  alignment: Alignment.center,
-                  height: 10,
-                  width: 10,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: Text(
-                    timerString,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12),
-                  ),
-                ),
+        child: Center(
+          child: GestureDetector(
+            onTap: _onTap,
+            child: Container(
+              margin: const EdgeInsets.all(50),
+              alignment: Alignment.center,
+              height: 10,
+              width: 10,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+              ),
+              child: Text(
+                timerString,
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12),
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
