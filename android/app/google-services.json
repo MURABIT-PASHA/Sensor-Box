@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "173933095210",
+    "project_id": "sensor-box-19a03",
+    "storage_bucket": "sensor-box-19a03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173933095210:android:b516c171e640b55248d653",
+        "android_client_info": {
+          "package_name": "com.ktun.edu.tr.sensor_box"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173933095210-rcmtaeoskn8dm2uoldcjhbdeteh2b4lc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ktun.edu.tr.sensor_box",
+            "certificate_hash": "7a630947a037f677a18f5e35edf33221a7a2f4b6"
+          }
+        },
+        {
+          "client_id": "173933095210-95fsa4d2hev82gibr5vs8kfptp9nd1sd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCX9lXgNfRGiL5Cu116NCBnk33QilBO2Xk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173933095210-95fsa4d2hev82gibr5vs8kfptp9nd1sd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

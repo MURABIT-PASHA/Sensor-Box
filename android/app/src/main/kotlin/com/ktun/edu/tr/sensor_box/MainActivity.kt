@@ -1,24 +1,14 @@
 package com.ktun.edu.tr.sensor_box
 
-import android.Manifest
-import android.bluetooth.BluetoothClass
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
-import android.bluetooth.BluetoothAdapter
 import android.content.Context
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
-import android.bluetooth.*
 import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
-import java.io.IOException
-import java.util.UUID
 
 class MainActivity: FlutterActivity() {
     private val methodChannelName: String = "com.ktun.edu.tr/androidMethodChannel"
@@ -26,23 +16,11 @@ class MainActivity: FlutterActivity() {
     private lateinit var methodChannel: MethodChannel
     private lateinit var eventChannel: EventChannel
     private lateinit var sensorManager: SensorManager
-    private lateinit var bluetoothManager: BluetoothManager
-    companion object {
-        var myUUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-
-        var bluetoothSocket: BluetoothSocket? = null
-        var bluetoothDevice: BluetoothDevice? = null
-        var bluetoothAdapter: BluetoothAdapter? = null
-        var isConnected: Boolean = false
-        lateinit var address: String
-    }
     private fun isWearable(): Boolean {
         return resources.configuration.isScreenRound
     }
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-            bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-            bluetoothAdapter = bluetoothManager!!.adapter
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             methodChannel =
                 MethodChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannelName)
@@ -60,38 +38,6 @@ class MainActivity: FlutterActivity() {
                         val sensorNames = getSensorNames()
                         result.success(sensorNames)
                     }
-                    "getDevices" -> {
-                        result.success(listPairedDevices())
-                    }
-                    "getStatus" -> {
-                        result.success(getStatus())
-                    }
-                    "getConnect" ->{
-                        val deviceAddress = methodCall.argument<String>("deviceAddress")
-                        if (deviceAddress != null){
-                            MainActivity.address = deviceAddress
-                            MainActivity.bluetoothDevice = MainActivity.bluetoothAdapter!!.getRemoteDevice(deviceAddress)
-                            if (bluetoothDevice != null){
-                                print(deviceAddress)
-                                print("\nBaşarılı bir şekilde bağlandı\n")
-                                result.success(connectToDevice())
-                            }else{
-                                print("Bluetooth bağlantısı başarısız oldu")
-                            }
-                        }else{
-                            print("Cihaz adresi iletilmiyor")
-                        }
-                    }
-                    "sendMessage" ->{
-                        result.success(sendCommand("startRecord"))
-                    }
-                    "getMessage" ->{
-                        result.success(getCommand())
-                    }
-                    "closeConnection" ->{
-                        result.success(disconnect())
-                    }
-
                     else -> {
                         result.error("invalid_arguments", "Invalid arguments.", null)
                     }
@@ -232,131 +178,5 @@ class MainActivity: FlutterActivity() {
         }
         return myMap
         //initSensorEventListener()
-    }
-    private fun listPairedDevices(): List<Map<String, String>> {
-        val pairedDevices = MainActivity.bluetoothAdapter!!.bondedDevices
-        val deviceList = mutableListOf<Map<String, String>>()
-
-        if (pairedDevices.isNotEmpty()) {
-            for (device in pairedDevices) {
-                val deviceClass = device.bluetoothClass.majorDeviceClass
-                var deviceType = "Unknown"
-                val deviceName = if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.BLUETOOTH
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    device.name
-                } else {
-                    ""
-                }
-                when (deviceClass) {
-                    BluetoothClass.Device.Major.AUDIO_VIDEO -> deviceType = "Headset"
-                    BluetoothClass.Device.Major.COMPUTER -> deviceType = "Computer"
-                    BluetoothClass.Device.Major.PHONE -> deviceType = "Phone"
-                    BluetoothClass.Device.Major.WEARABLE -> deviceType = "Wear"
-                }
-                val deviceMap = mapOf(
-                    "name" to deviceName,
-                    "address" to device.address,
-                    "type" to deviceType
-                )
-                deviceList.add(deviceMap)
-            }
-        }
-
-        return deviceList
-
-
-    }
-
-    private fun connectToDevice(): Boolean {
-        try {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return false
-            }
-            MainActivity.bluetoothSocket = bluetoothDevice!!.createInsecureRfcommSocketToServiceRecord(MainActivity.myUUID)
-            return if (bluetoothSocket != null){
-                if (bluetoothSocket!!.isConnected){
-                    true
-                }else{
-                    bluetoothSocket!!.connect()
-                    print("Soket ile başarılı bir bağlantı kuruldu")
-                    true
-                }
-            }else{
-                print("Soket ile bağlantı kurulamadı")
-                false
-            }
-        } catch (e: IOException) {
-            println("Error: ${e.message}")
-            print("Soket ile bağlantı kurulamadı")
-            return false
-        }
-    }
-
-    private fun sendCommand(input: String) {
-        if (MainActivity.bluetoothSocket != null) {
-            try{
-                MainActivity.bluetoothSocket!!.outputStream.write(input.toByteArray())
-            } catch(e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
-    private fun getCommand(): String{
-        if (MainActivity.bluetoothSocket != null) {
-            try{
-                val input = MainActivity.bluetoothSocket!!.inputStream
-                val result = input.read()
-                return result.toString()
-            } catch(e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return "null"
-    }
-    private fun getStatus():Boolean{
-        return MainActivity.bluetoothAdapter!!.isEnabled
-    }
-    private fun disconnect() {
-        if (bluetoothSocket != null) {
-            try {
-                bluetoothSocket!!.close()
-                bluetoothSocket = null
-                isConnected = false
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        finish()
-    }
-    private fun doInBackground(): String? {
-        try {
-            if (MainActivity.bluetoothSocket == null || !MainActivity.isConnected) {
-                MainActivity.bluetoothAdapter = bluetoothManager.adapter
-                val device: BluetoothDevice = MainActivity.bluetoothAdapter!!.getRemoteDevice(
-                    MainActivity.address
-                )
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.BLUETOOTH_CONNECT
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-
-                    return ""
-                }
-                MainActivity.bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(MainActivity.myUUID)
-                MainActivity.bluetoothAdapter!!.cancelDiscovery()
-                MainActivity.bluetoothSocket!!.connect()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
     }
 }

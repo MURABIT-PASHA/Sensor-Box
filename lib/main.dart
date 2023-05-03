@@ -1,8 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sensor_box/backend/pathfinder.dart';
 
-void main() {
-  runApp(const SensorBox());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(SensorBox());
 }
 
 class SensorBox extends StatelessWidget {
