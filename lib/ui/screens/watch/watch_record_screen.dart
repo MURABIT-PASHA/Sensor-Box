@@ -1,26 +1,41 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
 import 'package:sensor_box/backend/sensor_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WatchRecordScreen extends StatefulWidget {
   final Duration duration;
   final List<String> sensorNames;
-  const WatchRecordScreen({Key? key, required this.duration, required this.sensorNames}) : super(key: key);
+  const WatchRecordScreen(
+      {Key? key, required this.duration, required this.sensorNames})
+      : super(key: key);
 
   @override
   State<WatchRecordScreen> createState() => _WatchRecordScreenState();
 }
 
 class _WatchRecordScreenState extends State<WatchRecordScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late Timer _timer;
   late Timer _writeTimer;
   final DateTime _currentTime = DateTime.now();
   int _seconds = 0;
+  int _intCode = 0;
+
+  Future<void> checkDeviceCode() async {
+    final SharedPreferences _prefs = await SharedPreferences.getInstance();
+    int code = _prefs.getInt('device_id') ?? 0;
+    if (code != 0) {
+      _intCode = code;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    checkDeviceCode();
     SensorData sensorData = SensorData();
     sensorData.initializeSensors(widget.sensorNames);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -30,10 +45,9 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
     });
     _writeTimer = Timer.periodic(widget.duration, (timer) {
       setState(() {
-        sensorData.writeData(DateTime.now(),_currentTime);
+        sensorData.writeData(DateTime.now(), _currentTime);
       });
     });
-
   }
 
   @override
@@ -61,6 +75,14 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
       });
     }
   }
+  Future<void> cleanMessages(String type) async {
+    QuerySnapshot querySnapshot = await _firestore.collection('messages').get();
+    for (var document in querySnapshot.docs) {
+      if (document.get('id') == _intCode && document.get('message') == type) {
+        await document.reference.delete();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,28 +95,45 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
         alignment: Alignment.center,
         width: width,
         height: height,
-        child: Center(
-          child: GestureDetector(
-            onTap: _onTap,
-            child: Container(
-              margin: const EdgeInsets.all(50),
-              alignment: Alignment.center,
-              height: 10,
-              width: 10,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              child: Text(
-                timerString,
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12),
-              ),
-            ),
-          ),
-        ),
+        child: StreamBuilder<QuerySnapshot>(
+            stream: _firestore.collection('messages').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData == true) {
+                final messages = snapshot.data?.docs.reversed;
+                for (var message in messages!) {
+                  final int deviceID = message.get('id');
+                  final String messageContext = message.get('message');
+                  if (deviceID == _intCode && messageContext == 'stop') {
+                    cleanMessages('stop');
+                    _timer.cancel();
+                    _writeTimer.cancel();
+                    Navigator.pop(context);
+                  }
+                }
+              }
+              return Center(
+                child: GestureDetector(
+                  onTap: _onTap,
+                  child: Container(
+                    margin: const EdgeInsets.all(50),
+                    alignment: Alignment.center,
+                    height: width - 20,
+                    width: height - 20,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: Text(
+                      timerString,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12),
+                    ),
+                  ),
+                ),
+              );
+            }),
       ),
     );
   }

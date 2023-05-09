@@ -14,7 +14,7 @@ class FileSaver{
 
   Future<void> send(String path) async{
     File file = File(path);
-    //TODO: Send this file via bluetooth
+    //TODO: Send this file via firebase
 
   }
 

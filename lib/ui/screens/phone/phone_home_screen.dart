@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sensor_box/ui/screens/phone/phone_record_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../widgets/frosted_glass_box.dart';
@@ -19,7 +20,8 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
   int _intCode = 0;
   List<int> iconStatus = [];
   List<String> selectedSensorNames = [];
-  final _firestore = FirebaseFirestore.instance;
+  List<String> sensorsToBeSend = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<void> connectDevice(int code) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     QuerySnapshot querySnapshot =
@@ -34,6 +36,18 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
         prefs.setBool('connected_device', true);
         prefs.setInt('device_id', _intCode);
         setState(() {});
+      }
+    }
+  }
+  Future<void> sendStandardRequest(int code) async{
+    QuerySnapshot querySnapshot =
+    await _firestore.collection('device_ids').get();
+    for (var document in querySnapshot.docs) {
+      if (document.get('id') == code) {
+        _firestore.collection('messages').add({
+          'id': _intCode,
+          'message': "get_list",
+        });
       }
     }
   }
@@ -99,41 +113,43 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                 if (await checkDevice()) {
                   _intCode = await getDeviceId();
                   connection = true;
-                  print("Cihaz kayıtlı");
+                  sendStandardRequest(_intCode);
                   setState(() {});
                 } else {
-                  print("Cihaz kayıtlı değil");
-                  showDialog(
-                      context: context,
-                      builder: (builder) {
-                        return AlertDialog(
-                          title: Text("Kodu girin"),
-                          content: TextField(
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              _strCode = value;
-                            },
-                          ),
-                          actions: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  try {
-                                    _intCode = int.parse(_strCode);
-                                    if (_intCode != 0) {
-                                      connectDevice(_intCode);
+                  setState(() {
+                    showDialog(
+                        context: context,
+                        builder: (builder) {
+                          return AlertDialog(
+                            title: const Text("Kodu girin"),
+                            content: TextField(
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                _strCode = value;
+                              },
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    try {
+                                      _intCode = int.parse(_strCode);
+                                      if (_intCode != 0) {
+                                        connectDevice(_intCode);
+                                      }
+                                    } catch (exception) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  "Hatalı giriş yaptınız.")));
                                     }
-                                  } catch (exception) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Hatalı giriş yaptınız.")));
-                                  }
-                                  Navigator.pop(context);
-                                },
-                                child: Text("Bağlan"))
-                          ],
-                        );
-                      });
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Bağlan"))
+                            ],
+                          );
+                        });
+                  });
+
                 }
               },
               icon: Icon(
@@ -160,56 +176,104 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                     cleanMessages('set_list');
                   }
                 }
-                return ListView.builder(
-                  itemCount: selectedSensorNames.length,
-                  scrollDirection: Axis.vertical,
-                  physics: ScrollPhysics(),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  itemBuilder: (BuildContext context, int index) {
-                    return FrostedGlassBox(
+                return Column(
+                  children: [
+                    SizedBox(
                       width: width,
-                      height: 50.0,
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.save,
-                          color: iconStatus.contains(index)
-                              ? Colors.green
-                              : Colors.red,
-                        ),
-                        title: Text(
-                          selectedSensorNames[index],
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        onTap: () {
-                          setState(() {
-                            if(iconStatus.contains(index)){
-                              iconStatus.remove(index);
-                            }else{
-                              iconStatus.add(index);
-                            }
-                          });
-                        },
-                        onLongPress: (){
-                          // TODO: Open live sensor
+                      height: height - 150,
+                      child: ListView.builder(
+                        itemCount: selectedSensorNames.length,
+                        scrollDirection: Axis.vertical,
+                        physics: const ScrollPhysics(),
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        itemBuilder: (BuildContext context, int index) {
+                          return FrostedGlassBox(
+                            width: width,
+                            height: 50.0,
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.save,
+                                color: iconStatus.contains(index)
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                              title: Text(
+                                selectedSensorNames[index],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              onTap: () {
+                                setState(() {
+                                  if(iconStatus.contains(index)){
+                                    iconStatus.remove(index);
+                                  }else{
+                                    iconStatus.add(index);
+                                  }
+                                });
+                              },
+                              onLongPress: (){
+                                // TODO: Open live sensor
+                              },
+                            ),
+                          );
                         },
                       ),
-                    );
-                  },
+                    ),
+                    selectedSensorNames.isNotEmpty ? Container(
+                      alignment: Alignment.center,
+                      width: width,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)
+                          )
+                        ),
+                        onPressed: () {
+                          if(iconStatus.isNotEmpty){
+                            for (var i = 0; i < iconStatus.length; i++){
+                                  sensorsToBeSend.add(selectedSensorNames[iconStatus[i]]);
+                            }
+                            if(sensorsToBeSend.isNotEmpty){
+                              _firestore.collection('messages').add({
+                                'id': _intCode,
+                                'message': "start",
+                                'arguments': sensorsToBeSend,
+                              });
+                              Navigator.push(context, MaterialPageRoute(builder: (builder)=>PhoneRecordScreen(code:_intCode)));
+                            }else{
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Talihsiz bir hata oluştu")));
+                            }
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Hiçbir sensör seçmedin")));
+                          }
+
+                        },
+                        child: const Text("Kaydı Başlat"),
+
+                      ),
+                    ):const Center()
+                  ],
                 );
               } else {
                 return Center(
-                  child: Column(
-                    children: [
-                      CircularProgressIndicator(color: Colors.green,),
-                      Text("Something went wrong..."),
-                    ],
+                  child: Container(
+                    width: width,
+                    height: height,
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: const [
+                        CircularProgressIndicator(color: Colors.green,),
+                        Text("Biraz bekleyin..."),
+                      ],
+                    ),
                   ),
                 );
               }
             },
           )
-          : Center(
+          : const Center(
               child: Text("Bağlantı bekleniyor..."),
             ),
     );

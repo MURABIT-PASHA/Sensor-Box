@@ -110,13 +110,15 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                   List<dynamic> dynamicList = message.get('arguments');
                   List<String> arguments =
                       dynamicList.map((e) => e.toString()).toList();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (builder) => WatchRecordScreen(
-                              duration: Duration(seconds: 1),
-                              sensorNames: arguments)));
                   cleanMessages('start');
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (builder) => WatchRecordScreen(
+                                duration: const Duration(seconds: 1),
+                                sensorNames: arguments)));
+                  });
                 }
               }
               return Container(

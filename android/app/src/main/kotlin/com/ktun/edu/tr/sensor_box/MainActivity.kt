@@ -4,7 +4,6 @@ import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.Build
-import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -19,7 +18,7 @@ class MainActivity: FlutterActivity() {
     private fun isWearable(): Boolean {
         return resources.configuration.isScreenRound
     }
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             methodChannel =
