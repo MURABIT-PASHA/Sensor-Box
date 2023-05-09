@@ -71,7 +71,15 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
       }
     }
   }
-
+  Future<void> cleanMessages(String type) async{
+    QuerySnapshot querySnapshot =
+    await _firestore.collection('messages').get();
+    for (var document in querySnapshot.docs) {
+      if (document.get('id') == _intCode && document.get('message') == type) {
+        await document.reference.delete();
+      }
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -82,7 +90,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.black12,
+      backgroundColor: Colors.grey,
       appBar: AppBar(
         title: const Text("Sensor Box"),
         actions: [
@@ -149,6 +157,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                       messageContext == 'set_list') {
                     List<dynamic> dynamicList = message.get('list');
                     selectedSensorNames = dynamicList.map((item) => item.toString()).toList();
+                    cleanMessages('set_list');
                   }
                 }
                 return ListView.builder(
