@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
+import 'package:sensor_box/backend/file_saver.dart';
 import 'package:sensor_box/backend/sensor_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +19,7 @@ class WatchRecordScreen extends StatefulWidget {
 
 class _WatchRecordScreenState extends State<WatchRecordScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FileSaver _fileSaver = FileSaver();
   late Timer _timer;
   late Timer _writeTimer;
   final DateTime _currentTime = DateTime.now();
@@ -66,6 +68,7 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
   void _onTap() {
     if (_timer.isActive) {
       _timer.cancel();
+      sendFiles();
       Navigator.pop(context);
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -75,6 +78,7 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
       });
     }
   }
+
   Future<void> cleanMessages(String type) async {
     QuerySnapshot querySnapshot = await _firestore.collection('messages').get();
     for (var document in querySnapshot.docs) {
@@ -83,7 +87,14 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
       }
     }
   }
-
+  Future<void> sendFiles() async{
+    if(await _fileSaver.sendFiles(_intCode)){
+      print("Dosyalar gönderildi");
+    }
+    else{
+      print("Dosyalar gönderilemedi");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Color backgroundColor = const Color(0xFF1C1C1E);
@@ -105,9 +116,12 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
                   final String messageContext = message.get('message');
                   if (deviceID == _intCode && messageContext == 'stop') {
                     cleanMessages('stop');
+                    sendFiles();
                     _timer.cancel();
                     _writeTimer.cancel();
-                    Navigator.pop(context);
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pop(context);
+                    });
                   }
                 }
               }

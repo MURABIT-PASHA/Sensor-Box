@@ -23,13 +23,11 @@ class MainActivity: FlutterActivity() {
             sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
             methodChannel =
                 MethodChannel(flutterEngine.dartExecutor.binaryMessenger, methodChannelName)
+            eventChannel = EventChannel(
+                        flutterEngine.dartExecutor.binaryMessenger, eventChannelName)
             methodChannel.setMethodCallHandler { methodCall, result ->
                 when (methodCall.method) {
                     "getSensorsList" -> {
-                        eventChannel = EventChannel(
-                            flutterEngine.dartExecutor.binaryMessenger,
-                            eventChannelName
-                        )
                         result.success(getSensorsList())
                         initSensorEventListener()
                     }

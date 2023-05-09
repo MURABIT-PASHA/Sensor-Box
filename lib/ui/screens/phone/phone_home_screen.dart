@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sensor_box/backend/file_saver.dart';
 import 'package:sensor_box/ui/screens/phone/phone_record_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,6 +23,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
   List<String> selectedSensorNames = [];
   List<String> sensorsToBeSend = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FileSaver _fileSaver = FileSaver();
   Future<void> connectDevice(int code) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     QuerySnapshot querySnapshot =
@@ -115,6 +117,12 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                   connection = true;
                   sendStandardRequest(_intCode);
                   setState(() {});
+                  if(await _fileSaver.getFiles(_intCode)){
+                    setState(() {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Dosyalar bulundu ve indiriliyor...")));
+                    });
+                    await _fileSaver.deleteFilesInStorage(_intCode);
+                  }
                 } else {
                   setState(() {
                     showDialog(

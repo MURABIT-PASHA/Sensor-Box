@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 class FileSaver{
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   void deleteFilesInDirectory() async{
     Directory directory = await getApplicationDocumentsDirectory();
@@ -12,20 +15,61 @@ class FileSaver{
     }
   }
 
-  Future<void> send(String path) async{
-    File file = File(path);
-    //TODO: Send this file via firebase
+  Future<void> send(String path, int deviceCode) async{
+    try{
+      print(path);
+      File file = await File(path).create();
+      try{
+        final ref = _storage.ref().child('$deviceCode/$path');
+        final uploadTask = ref.putFile(file);
+        await uploadTask;
+      }on FirebaseException catch(e){
+        print(e);
+      }
+    }on OSError catch(e){
+      print(e);
+    }
 
   }
+  Future<bool> getFiles(int deviceCode) async {
+    final directory = await getExternalStorageDirectory();
+    final ref = _storage.ref().child('$deviceCode');
+    final ListResult result = await ref.listAll();
+    if(result.items.isNotEmpty) {
+      for (var fileRef in result.items) {
+        var bytes = await fileRef.getData();
+        List<int> intList = bytes?.toList() ?? [];
+        final filePath = '${directory?.path}/Downloads/${fileRef.name}';
+        await File(filePath).writeAsBytes(intList);
+      }
+    }else{
+      return false;
+    }
+    return true;
+  }
 
-  Future<bool> sendFiles() async{
+  Future<void> deleteFilesInStorage(int deviceCode) async{
+    final storageRef = FirebaseStorage.instance.ref().child('$deviceCode');
+    final ListResult result = await storageRef.listAll();
+    final files = result.items;
+
+    await Future.wait(
+      files.map((file) => file.delete()),
+    );
+
+  }
+  Future<bool> sendFiles(int deviceCode) async{
     Directory directory = await getApplicationDocumentsDirectory();
-    List<FileSystemEntity> files = directory.listSync();
+    List<FileSystemEntity> files = await directory.list().toList();
+    print(files);
     for (FileSystemEntity file in files) {
-      if (file is File) {
+      if (file.path.isNotEmpty) {
         try{
-          send(file.path);
+          String fileName = basename(file.path);
+          print('Basename: $fileName');
+          send(file.path,deviceCode);
         }catch(exception){
+          print(exception);
           return false;
         }
         return true;
@@ -82,6 +126,7 @@ class FileSaver{
       }
       return true;
     }else {
+      print("Sensor yazma hatası var");
       return false;
     }
   }
