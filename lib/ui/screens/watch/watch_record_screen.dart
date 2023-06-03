@@ -46,9 +46,7 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
       });
     });
     _writeTimer = Timer.periodic(widget.duration, (timer) {
-      setState(() {
         sensorData.writeData(DateTime.now(), _currentTime);
-      });
     });
   }
 
@@ -68,7 +66,8 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
   void _onTap() {
     if (_timer.isActive) {
       _timer.cancel();
-      sendFiles();
+      _writeTimer.cancel();
+      sendFiles().then((value) => print(value));
       Navigator.pop(context);
     } else {
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -87,12 +86,15 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
       }
     }
   }
-  Future<void> sendFiles() async{
+  Future<bool> sendFiles() async{
+    print("Dosya gönderiliyor....");
     if(await _fileSaver.sendFiles(_intCode)){
       print("Dosyalar gönderildi");
+      return true;
     }
     else{
       print("Dosyalar gönderilemedi");
+      return false;
     }
   }
   @override
@@ -116,11 +118,8 @@ class _WatchRecordScreenState extends State<WatchRecordScreen> {
                   final String messageContext = message.get('message');
                   if (deviceID == _intCode && messageContext == 'stop') {
                     cleanMessages('stop');
-                    sendFiles();
-                    _timer.cancel();
-                    _writeTimer.cancel();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.pop(context);
+                      _onTap();
                     });
                   }
                 }

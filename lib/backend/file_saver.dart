@@ -19,6 +19,10 @@ class FileSaver{
     try{
       print(path);
       File file = await File(path).create();
+      final content = await file.readAsLines();
+      for (final line in content) {
+        print("Satır: $line");
+      }
       try{
         final ref = _storage.ref().child('$deviceCode/$path');
         final uploadTask = ref.putFile(file);
@@ -61,16 +65,14 @@ class FileSaver{
   Future<bool> sendFiles(int deviceCode) async{
     Directory directory = await getApplicationDocumentsDirectory();
     List<FileSystemEntity> files = await directory.list().toList();
-    print(files);
     for (FileSystemEntity file in files) {
       if (file.path.isNotEmpty) {
         try{
           String fileName = basename(file.path);
-          print('Basename: $fileName');
           send(file.path,deviceCode);
+          print(file.path);
         }catch(exception){
           print(exception);
-          return false;
         }
         return true;
       }else{
@@ -97,29 +99,19 @@ class FileSaver{
       directory = value.path);
       for (Map<String, String> sensor in tmpUI) {
         final String csvFile = "${sensor["name"]}${firstTime
-            .millisecondsSinceEpoch}.csv";
-        print(csvFile);
+            .millisecondsSinceEpoch}.csv";;
         final filePath = "$directory/$csvFile";
-        print(filePath);
         final File file = File(filePath);
-        // Open file if its not empty then just add row else add headers too
         if (await file.exists()) {
-          print("Exist");
-          // Read file content and print each line
-          final content = await file.readAsLines();
-          for (final line in content) {
-            print(line);
-          }
-          // Add values row to the end of file
-          final values = sensor.values.join(',') + ',${timestamp.millisecondsSinceEpoch}' + '\n';
+          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
           await file.writeAsString(values, mode: FileMode.append);
         }
         else {
           print("Not Exist");
           // Create headers
-          final headers = sensor.keys.join(',') + ',timestamp' + '\n';
+          final headers = '${sensor.keys.join(',')},timestamp\n';
           // Create values row
-          final values = sensor.values.join(',') + ',${timestamp.millisecondsSinceEpoch}' + '\n';
+          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
           // Write headers and values to file
           await file.writeAsString(headers + values);
         }

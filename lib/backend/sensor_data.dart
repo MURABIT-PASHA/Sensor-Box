@@ -584,16 +584,16 @@ class SensorData {
     if(sensorNames.isNotEmpty){
       for (String name in sensorNames){
         switch(name) {
-          case "Goldfish 3-axis Accelerometer":
+          case "LiAcc_Sensor":
             sensorList.add(_listAccelerometer);
             break;
-          case "Goldfish 3-axis Gyroscope":
+          case "Gyro_Sensor":
             sensorList.add(_listGyroscope);
             break;
-          case "Goldfish 3-axis Magnetic field sensor":
+          case "Mag_Sensor":
             sensorList.add(_listMagneticField);
             break;
-          case "Goldfish Orientation sensor":
+          case "O_Sensor":
             sensorList.add(_listOrientationSensor);
             break;
           case "Goldfish Ambient Temperature sensor":
@@ -602,10 +602,10 @@ class SensorData {
           case "Goldfish Proximity sensor":
             sensorList.add(_listProximity);
             break;
-          case "Goldfish Light sensor":
+          case "Light_Sensor":
             sensorList.add(_listAmbientLight);
             break;
-          case "Goldfish Pressure sensor":
+          case "Press_Sensor":
             sensorList.add(_listAtmosphericPressure);
             break;
           case "Goldfish Humidity sensor":
@@ -617,25 +617,25 @@ class SensorData {
           case "Goldfish 3-axis Gyroscope (uncalibrated)":
             sensorList.add(_listUncalibratedGyroscope);
             break;
-          case "Goldfish Heart rate sensor":
+          case "HEART_RATE":
             sensorList.add(_listHeartBeat);
             break;
-          case "Goldfish wrist tilt gesture sensor":
+          case "Wrist_Tilt":
             sensorList.add(_listStationaryDetect);
             break;
           case "Game Rotation Vector Sensor":
             sensorList.add(_listGameRotationVector);
             break;
-          case "GeoMag Rotation Vector Sensor":
+          case "GeoMag_RV_Sensor":
             sensorList.add(_listGeoMagneticRotationVector);
             break;
-          case "Gravity Sensor":
+          case "Gravity_Sensor":
             sensorList.add(_listGravity);
             break;
-          case "Linear Acceleration Sensor":
+          case "LiAcc_Sensor":
             sensorList.add(_listLinearAcceleration);
             break;
-          case "Rotation Vector Sensor":
+          case "RV_Sensor":
             sensorList.add(_listRotationVector);
             break;
           default:

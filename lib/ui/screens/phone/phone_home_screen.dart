@@ -214,8 +214,10 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                                 setState(() {
                                   if(iconStatus.contains(index)){
                                     iconStatus.remove(index);
+                                    print(iconStatus);
                                   }else{
                                     iconStatus.add(index);
+                                    print(iconStatus);
                                   }
                                 });
                               },
