@@ -11,26 +11,26 @@ class SensorData {
   static EventChannel _eventChannel = const EventChannel(_eventChannelName);
   bool _isFirstUIBuildDone = false;
   List<dynamic> sensorList = [];
-  List<Accelerometer> _listAccelerometer = [];
-  List<UncalibratedAccelerometer> _listUncalibratedAccelerometer = [];
-  List<Gravity> _listGravity = [];
-  List<LinearAcceleration> _listLinearAcceleration = [];
-  List<MagneticField> _listMagneticField = [];
-  List<OrientationSensor> _listOrientationSensor = [];
-  List<Gyroscope> _listGyroscope = [];
-  List<UncalibratedGyroscope> _listUncalibratedGyroscope = [];
-  List<HeartBeat> _listHeartBeat = [];
-  List<AmbientLight> _listAmbientLight = [];
-  List<AtmosphericPressure> _listAtmosphericPressure = [];
-  List<Proximity> _listProximity = [];
-  List<RotationVector> _listRotationVector = [];
-  List<GameRotationVector> _listGameRotationVector = [];
-  List<GeoMagneticRotationVector> _listGeoMagneticRotationVector = [];
-  List<RelativeHumidity> _listRelativeHumidity = [];
-  List<AmbientRoomTemperature> _listAmbientRoomTemperature = [];
-  List<LowLatencyOffBodyDetect> _listLowLatencyOffBodyDetect = [];
-  List<MotionDetect> _listMotionDetect = [];
-  List<StationaryDetect> _listStationaryDetect = [];
+  List<Accelerometer> listAccelerometer = [];
+  List<UncalibratedAccelerometer> listUncalibratedAccelerometer = [];
+  List<Gravity> listGravity = [];
+  List<LinearAcceleration> listLinearAcceleration = [];
+  List<MagneticField> listMagneticField = [];
+  List<OrientationSensor> listOrientationSensor = [];
+  List<Gyroscope> listGyroscope = [];
+  List<UncalibratedGyroscope> listUncalibratedGyroscope = [];
+  List<HeartBeat> listHeartBeat = [];
+  List<AmbientLight> listAmbientLight = [];
+  List<AtmosphericPressure> listAtmosphericPressure = [];
+  List<Proximity> listProximity = [];
+  List<RotationVector> listRotationVector = [];
+  List<GameRotationVector> listGameRotationVector = [];
+  List<GeoMagneticRotationVector> listGeoMagneticRotationVector = [];
+  List<RelativeHumidity> listRelativeHumidity = [];
+  List<AmbientRoomTemperature> listAmbientRoomTemperature = [];
+  List<LowLatencyOffBodyDetect> listLowLatencyOffBodyDetect = [];
+  List<MotionDetect> listMotionDetect = [];
+  List<StationaryDetect> listStationaryDetect = [];
 
   SensorInfoHolder getMeAnInstanceOfSensorInfoHolder(Map<String, String> data) {
     return SensorInfoHolder(
@@ -62,7 +62,7 @@ class SensorData {
           case '1':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listAccelerometer.add(Accelerometer(
+                listAccelerometer.add(Accelerometer(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -74,7 +74,7 @@ class SensorData {
           case '35':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listUncalibratedAccelerometer.add(UncalibratedAccelerometer(
+                listUncalibratedAccelerometer.add(UncalibratedAccelerometer(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -89,7 +89,7 @@ class SensorData {
           case '9':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listGravity.add(Gravity(
+                listGravity.add(Gravity(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -101,7 +101,7 @@ class SensorData {
           case '10':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listLinearAcceleration.add(LinearAcceleration(
+                listLinearAcceleration.add(LinearAcceleration(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -113,7 +113,7 @@ class SensorData {
           case '2':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listMagneticField.add(MagneticField(
+                listMagneticField.add(MagneticField(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -125,7 +125,7 @@ class SensorData {
           case '3':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listOrientationSensor.add(OrientationSensor(
+                listOrientationSensor.add(OrientationSensor(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -137,7 +137,7 @@ class SensorData {
           case '4':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listGyroscope.add(Gyroscope(
+                listGyroscope.add(Gyroscope(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -149,7 +149,7 @@ class SensorData {
           case '16':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listUncalibratedGyroscope.add(UncalibratedGyroscope(
+                listUncalibratedGyroscope.add(UncalibratedGyroscope(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -164,7 +164,7 @@ class SensorData {
           case '31':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listHeartBeat.add(HeartBeat(
+                listHeartBeat.add(HeartBeat(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -174,7 +174,7 @@ class SensorData {
           case '5':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listAmbientLight.add(AmbientLight(
+                listAmbientLight.add(AmbientLight(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -184,7 +184,7 @@ class SensorData {
           case '6':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listAtmosphericPressure.add(AtmosphericPressure(
+                listAtmosphericPressure.add(AtmosphericPressure(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -194,7 +194,7 @@ class SensorData {
           case '8':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listProximity.add(Proximity(
+                listProximity.add(Proximity(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -204,7 +204,7 @@ class SensorData {
           case '11':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listRotationVector.add(RotationVector(
+                listRotationVector.add(RotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -218,7 +218,7 @@ class SensorData {
           case '15':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listGameRotationVector.add(GameRotationVector(
+                listGameRotationVector.add(GameRotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -232,7 +232,7 @@ class SensorData {
           case '20':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listGeoMagneticRotationVector.add(GeoMagneticRotationVector(
+                listGeoMagneticRotationVector.add(GeoMagneticRotationVector(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA',
@@ -246,7 +246,7 @@ class SensorData {
           case '12':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listRelativeHumidity.add(RelativeHumidity(
+                listRelativeHumidity.add(RelativeHumidity(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -256,7 +256,7 @@ class SensorData {
           case '13':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listAmbientRoomTemperature.add(AmbientRoomTemperature(
+                listAmbientRoomTemperature.add(AmbientRoomTemperature(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -266,7 +266,7 @@ class SensorData {
           case '29':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listStationaryDetect.add(StationaryDetect(
+                listStationaryDetect.add(StationaryDetect(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -276,7 +276,7 @@ class SensorData {
           case '30':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listMotionDetect.add(MotionDetect(
+                listMotionDetect.add(MotionDetect(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -286,7 +286,7 @@ class SensorData {
           case '34':
             if (value.isNotEmpty) {
               for (var element in value) {
-                _listLowLatencyOffBodyDetect.add(LowLatencyOffBodyDetect(
+                listLowLatencyOffBodyDetect.add(LowLatencyOffBodyDetect(
                     getMeAnInstanceOfSensorInfoHolder(
                         Map<String, String>.from(element)),
                     'NA'));
@@ -297,7 +297,9 @@ class SensorData {
           //not supported yet
         }
       });
-    } on PlatformException {}
+    } on PlatformException {
+      _isFirstUIBuildDone = false;
+    }
     _isFirstUIBuildDone = true;
   }
 
@@ -321,7 +323,7 @@ class SensorData {
     Map<String, String> receivedData = Map<String, String>.from(event);
     switch (receivedData['type']) {
       case '1':
-        for (var item in _listAccelerometer) {
+        for (var item in listAccelerometer) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.x = sensorFeed![0];
@@ -331,7 +333,7 @@ class SensorData {
         }
         break;
       case '35':
-        for (var item in _listUncalibratedAccelerometer) {
+        for (var item in listUncalibratedAccelerometer) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -345,7 +347,7 @@ class SensorData {
         }
         break;
       case '9':
-        for (var item in _listGravity) {
+        for (var item in listGravity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -356,7 +358,7 @@ class SensorData {
         }
         break;
       case '10':
-        for (var item in _listLinearAcceleration) {
+        for (var item in listLinearAcceleration) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -367,7 +369,7 @@ class SensorData {
         }
         break;
       case '2':
-        for (var item in _listMagneticField) {
+        for (var item in listMagneticField) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -378,7 +380,7 @@ class SensorData {
         }
         break;
       case '3':
-        for (var item in _listOrientationSensor) {
+        for (var item in listOrientationSensor) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -389,7 +391,7 @@ class SensorData {
         }
         break;
       case '4':
-        for (var item in _listGyroscope) {
+        for (var item in listGyroscope) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.angularSpeedAroundX = sensorFeed![0];
@@ -399,7 +401,7 @@ class SensorData {
         }
         break;
       case '16':
-        for (var item in _listUncalibratedGyroscope) {
+        for (var item in listUncalibratedGyroscope) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -413,7 +415,7 @@ class SensorData {
         }
         break;
       case '31':
-        for (var item in _listHeartBeat) {
+        for (var item in listHeartBeat) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -422,7 +424,7 @@ class SensorData {
         }
         break;
       case '5':
-        for (var item in _listAmbientLight) {
+        for (var item in listAmbientLight) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -431,7 +433,7 @@ class SensorData {
         }
         break;
       case '6':
-        for (var item in _listAtmosphericPressure) {
+        for (var item in listAtmosphericPressure) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.pressure = sensorFeed![0];
@@ -439,7 +441,7 @@ class SensorData {
         }
         break;
       case '8':
-        for (var item in _listProximity) {
+        for (var item in listProximity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.distance = sensorFeed![0];
@@ -447,7 +449,7 @@ class SensorData {
         }
         break;
       case '11':
-        for (var item in _listRotationVector) {
+        for (var item in listRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.x = sensorFeed![0];
@@ -462,7 +464,7 @@ class SensorData {
         }
         break;
       case '15':
-        for (var item in _listGameRotationVector) {
+        for (var item in listGameRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.x = sensorFeed![0];
@@ -477,7 +479,7 @@ class SensorData {
         }
         break;
       case '20':
-        for (var item in _listGeoMagneticRotationVector) {
+        for (var item in listGeoMagneticRotationVector) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
             item.x = sensorFeed![0];
@@ -492,7 +494,7 @@ class SensorData {
         }
         break;
       case '12':
-        for (var item in _listRelativeHumidity) {
+        for (var item in listRelativeHumidity) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -501,7 +503,7 @@ class SensorData {
         }
         break;
       case '13':
-        for (var item in _listAmbientRoomTemperature) {
+        for (var item in listAmbientRoomTemperature) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -510,7 +512,7 @@ class SensorData {
         }
         break;
       case '29':
-        for (var item in _listStationaryDetect) {
+        for (var item in listStationaryDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -519,7 +521,7 @@ class SensorData {
         }
         break;
       case '30':
-        for (var item in _listMotionDetect) {
+        for (var item in listMotionDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -528,7 +530,7 @@ class SensorData {
         }
         break;
       case '34':
-        for (var item in _listLowLatencyOffBodyDetect) {
+        for (var item in listLowLatencyOffBodyDetect) {
           if (isAMatch(item.sensor, receivedData)) {
             List<String>? sensorFeed = receivedData['values']?.split(';');
 
@@ -547,26 +549,26 @@ class SensorData {
     // main UI rendering operation is performed here, be careful
     List<Map<String, String>> tmpUI = [];
     for (var elem in <List<dynamic>>[
-      _listAccelerometer,
-      _listUncalibratedAccelerometer,
-      _listGravity,
-      _listLinearAcceleration,
-      _listMagneticField,
-      _listOrientationSensor,
-      _listGyroscope,
-      _listUncalibratedGyroscope,
-      _listHeartBeat,
-      _listAmbientLight,
-      _listAtmosphericPressure,
-      _listProximity,
-      _listRotationVector,
-      _listGameRotationVector,
-      _listGeoMagneticRotationVector,
-      _listRelativeHumidity,
-      _listAmbientRoomTemperature,
-      _listStationaryDetect,
-      _listMotionDetect,
-      _listLowLatencyOffBodyDetect,
+      listAccelerometer,
+      listUncalibratedAccelerometer,
+      listGravity,
+      listLinearAcceleration,
+      listMagneticField,
+      listOrientationSensor,
+      listGyroscope,
+      listUncalibratedGyroscope,
+      listHeartBeat,
+      listAmbientLight,
+      listAtmosphericPressure,
+      listProximity,
+      listRotationVector,
+      listGameRotationVector,
+      listGeoMagneticRotationVector,
+      listRelativeHumidity,
+      listAmbientRoomTemperature,
+      listStationaryDetect,
+      listMotionDetect,
+      listLowLatencyOffBodyDetect,
     ]) {
       for (var item in elem) {
         tmpUI.add(item.getMap());
@@ -584,61 +586,62 @@ class SensorData {
     if(sensorNames.isNotEmpty){
       for (String name in sensorNames){
         switch(name) {
-          case "LiAcc_Sensor":
-            sensorList.add(_listAccelerometer);
+          case "Accelerometer":
+            sensorList.add(listAccelerometer);
             break;
-          case "Gyro_Sensor":
-            sensorList.add(_listGyroscope);
+          case "Gyroscope":
+            sensorList.add(listGyroscope);
             break;
-          case "Mag_Sensor":
-            sensorList.add(_listMagneticField);
+          case "Magnetic Field":
+            sensorList.add(listMagneticField);
             break;
-          case "O_Sensor":
-            sensorList.add(_listOrientationSensor);
+          case "Orientation":
+            sensorList.add(listOrientationSensor);
             break;
-          case "Goldfish Ambient Temperature sensor":
-            sensorList.add(_listAmbientRoomTemperature);
+          case "Ambient Temperature":
+            sensorList.add(listAmbientRoomTemperature);
             break;
-          case "Goldfish Proximity sensor":
-            sensorList.add(_listProximity);
+          case "Proximity":
+            sensorList.add(listProximity);
             break;
-          case "Light_Sensor":
-            sensorList.add(_listAmbientLight);
+          case "Light":
+            sensorList.add(listAmbientLight);
             break;
-          case "Press_Sensor":
-            sensorList.add(_listAtmosphericPressure);
+          case "Pressure":
+            sensorList.add(listAtmosphericPressure);
             break;
-          case "Goldfish Humidity sensor":
-            sensorList.add(_listRelativeHumidity);
+          case "Humidity":
+            sensorList.add(listRelativeHumidity);
             break;
-          case "Goldfish 3-axis Magnetic field sensor (uncalibrated)":
-            sensorList.add(_listMagneticField);
+          case "Uncalibrated Magnetic field":
+            sensorList.add(listMotionDetect);
             break;
-          case "Goldfish 3-axis Gyroscope (uncalibrated)":
-            sensorList.add(_listUncalibratedGyroscope);
+          case "Uncalibrated Gyroscope":
+            sensorList.add(listUncalibratedGyroscope);
             break;
-          case "HEART_RATE":
-            sensorList.add(_listHeartBeat);
+          case "Heart Rate":
+            sensorList.add(listHeartBeat);
             break;
-          case "Wrist_Tilt":
-            sensorList.add(_listStationaryDetect);
+          case "Gesture":
+            sensorList.add(listStationaryDetect);
             break;
-          case "Game Rotation Vector Sensor":
-            sensorList.add(_listGameRotationVector);
+          case "Game Rotation":
+            sensorList.add(listGameRotationVector);
             break;
-          case "GeoMag_RV_Sensor":
-            sensorList.add(_listGeoMagneticRotationVector);
+          case "Geographic Magnetic Rotation":
+            sensorList.add(listGeoMagneticRotationVector);
             break;
-          case "Gravity_Sensor":
-            sensorList.add(_listGravity);
+          case "Gravity":
+            sensorList.add(listGravity);
             break;
-          case "LiAcc_Sensor":
-            sensorList.add(_listLinearAcceleration);
+          case "Linear Acceleration":
+            sensorList.add(listLinearAcceleration);
             break;
-          case "RV_Sensor":
-            sensorList.add(_listRotationVector);
+          case "Rotation":
+            sensorList.add(listRotationVector);
             break;
           default:
+            break;
         }
       }
     }

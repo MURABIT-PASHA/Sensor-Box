@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:sensor_box/backend/sensor_data.dart';
+import 'package:sensor_box/ui/widgets/frosted_glass_box.dart';
+import 'package:real_time_chart/real_time_chart.dart';
 
 class WatchSensorGraphicScreen extends StatefulWidget {
   final double width;
@@ -19,30 +21,67 @@ class WatchSensorGraphicScreen extends StatefulWidget {
 }
 
 class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
-  late List<double> _selectedValues;
-  List<StreamSubscription<dynamic>> streamSubscriptions =
-      <StreamSubscription<dynamic>>[];
-  late List<List<LiveData>> _chartData;
-  late List<ChartSeriesController> _chartController;
-  final int _frequency = 100;
-  int _time = 0;
+  SensorData sensorData = SensorData();
+  List<String> getTypeOfSensor() {
+    switch (widget.sensorName) {
+      case "Accelerometer":
+        return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
+      case "Gyroscope":
+        return ['Angular Speed around X', 'Angular Speed around Y', 'Angular Speed around Z'];
+      case "Magnetic Field":
+        return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
+      case "Orientation":
+        return [];
+      case "Ambient Temperature":
+        return ['Temperature'];
+      case "Proximity":
+        return ['Distance From Screen'];
+      case "Light":
+        return ['Ambient Light Level'];
+      case "Pressure":
+        return ['Atmospheric Pressure'];
+      case "Humidity":
+        return ['Relative Air Humidity'];
+      case "Uncalibrated Magnetic field":
+        return [];
+      case "Uncalibrated Gyroscope":
+        return ['Angular Speed around X', 'Angular Speed around Y', 'Angular Speed around Z', 'Estimated Drift around X', 'Estimated Drift around Y', 'Estimated Drift around Z'];
+      case "Heart Rate":
+        return ['Confidence'];
+      case "Gesture":
+        return [];
+      case "Game Rotation":
+        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)'];
+      case "Geographic Magnetic Rotation":
+        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)', 'Cos(\u{03b8}/2)'];
+      case "Gravity":
+        return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
+      case "Linear Acceleration":
+        return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
+      case "Rotation":
+        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)', 'Cos(\u{03b8}/2)'];
+      default:
+        return [];
+    }
+  }
 
-  Future getStreamData() async {
-    //TODO: Get selected sensor values
+  Stream<double> startStreamData() {
+    return Stream.periodic(const Duration(milliseconds: 500), (_) {
+      return double.parse(
+          sensorData.getSensorsInfo()[0]['Along X-axis']!.split(" ")[0]);
+    }).asBroadcastStream();
   }
 
   @override
   void initState() {
     super.initState();
-    getStreamData();
-    Timer.periodic(Duration(milliseconds: _frequency), test);
+    sensorData.initializeSensors([widget.sensorName]);
+    getTypeOfSensor();
   }
 
   @override
   void dispose() {
-    for (var subscription in streamSubscriptions) {
-      subscription.cancel();
-    }
+    // TODO: add on will pop scope
     super.dispose();
   }
 
@@ -50,53 +89,26 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SfCartesianChart(
-          series: <LineSeries<LiveData, int>>[
-            lines(0),
-            lines(1),
-            lines(2),
-          ],
-          primaryXAxis: NumericAxis(
-              majorGridLines: const MajorGridLines(width: 0),
-              edgeLabelPlacement: EdgeLabelPlacement.shift,
-              interval: 3,
-              title: AxisTitle(text: 'Time (milliseconds)')),
-          primaryYAxis: NumericAxis(
-            axisLine: const AxisLine(width: 0),
-            majorTickLines: const MajorTickLines(size: 0),
-            title: AxisTitle(text: widget.sensorName),
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: FrostedGlassBox(
+            width: widget.width,
+            height: widget.height,
+            child: Container(
+              width: widget.width - 10,
+              height: widget.height - 10,
+              alignment: Alignment.center,
+              child: RealTimeGraph(
+                xAxisColor: Colors.white,
+                yAxisColor: Colors.white,
+                graphColor: Colors.red,
+                stream: startStreamData(),
+                supportNegativeValuesDisplay: true,
+              ),
+            ),
           ),
         ),
       ),
     );
   }
-
-  void updateDataSource(Timer timer, int index) {
-    _chartData[index].add(LiveData(_time++, _selectedValues[0]));
-    _chartData[index].removeAt(0);
-    _chartController[index].updateDataSource(
-        addedDataIndex: _chartData[index].length - 1, removedDataIndex: 0);
-  }
-
-  LineSeries<LiveData, int> lines(int index) {
-    return LineSeries<LiveData, int>(
-      onRendererCreated: (ChartSeriesController controller) {
-        _chartController[index] = controller;
-      },
-      dataSource: _chartData[index],
-      color: const Color.fromRGBO(192, 108, 132, 1),
-      xValueMapper: (LiveData sales, _) => sales.time,
-      yValueMapper: (LiveData sales, _) => sales.value,
-    );
-  }
-  void test(Timer timer){
-    print("This is a timestamp tester");
-  }
-}
-
-
-class LiveData {
-  LiveData(this.time, this.value);
-  final int time;
-  final num value;
 }

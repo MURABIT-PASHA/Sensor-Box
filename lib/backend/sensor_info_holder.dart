@@ -264,7 +264,7 @@ class HeartBeat {
   String confidence;
   Map<String, String> getMap() {
     return this.sensor.appendThem({
-      'Confidence': '${this.confidence}',
+      'Confidence': this.confidence,
     });
   }
 }
@@ -288,9 +288,8 @@ class AtmosphericPressure {
   String pressure;
   Map<String, String> getMap() {
     return this.sensor.appendThem({
-'Atmospheric Pressure':'${this.pressure} hPa',
-        }
-    );
+      'Atmospheric Pressure': '${this.pressure} hPa',
+    });
   }
 }
 
@@ -302,8 +301,7 @@ class Proximity {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Distance From Screen': '${this.distance} cm',
-    }
-    );
+    });
   }
 }
 
@@ -324,8 +322,7 @@ class RotationVector {
       'Z * Sin(\u{03b8}/2)': '${this.z}',
       'Cos(\u{03b8}/2)': '${this.someVal}',
       'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
-    }
-    );
+    });
   }
 }
 
@@ -346,8 +343,7 @@ class GameRotationVector {
       'Z * Sin(\u{03b8}/2)': '${this.z}',
       'Cos(\u{03b8}/2)': '${this.someVal}',
       'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
-    }
-    );
+    });
   }
 }
 
@@ -368,8 +364,7 @@ class GeoMagneticRotationVector {
       'Z * Sin(\u{03b8}/2)': '${this.z}',
       'Cos(\u{03b8}/2)': '${this.someVal}',
       'Estimated Heading Accuracy': '${this.estimatedHeadingAccuracy} rad',
-    }
-    );
+    });
   }
 }
 
@@ -381,8 +376,7 @@ class RelativeHumidity {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Relative Air Humidity': '${this.humidity} %',
-    }
-    );
+    });
   }
 }
 
@@ -394,8 +388,7 @@ class AmbientRoomTemperature {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Temperature': '${this.temperature} C',
-    }
-    );
+    });
   }
 }
 
@@ -412,8 +405,7 @@ class LowLatencyOffBodyDetect {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Off Body State': '${getStateText()}',
-    }
-    );
+    });
   }
 }
 
@@ -432,8 +424,7 @@ class MotionDetect {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Motion Detection': '${getStateText()}',
-    }
-    );
+    });
   }
 }
 
@@ -452,7 +443,6 @@ class StationaryDetect {
   Map<String, String> getMap() {
     return this.sensor.appendThem({
       'Motion Detection': '${getStateText()}',
-    }
-    );
+    });
   }
 }

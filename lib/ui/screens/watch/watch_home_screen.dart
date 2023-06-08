@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sensor_box/backend/clear_names.dart';
 import 'package:sensor_box/ui/screens/watch/watch_info_screen.dart';
 import 'package:sensor_box/ui/screens/watch/watch_live_sensor_screen.dart';
 import 'package:sensor_box/ui/screens/watch/watch_record_screen.dart';
@@ -52,8 +53,8 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
   }
 
   Future<bool> checkDeviceCode() async {
-    final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    int code = _prefs.getInt('device_id') ?? 0;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    int code = prefs.getInt('device_id') ?? 0;
     if (code != 0) {
       _intCode = code;
       return true;
@@ -74,7 +75,7 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
   @override
   void initState() {
     getSensorList().then((value) {
-      sensorNames = value;
+      sensorNames = ClearNames(value).sensorNames;
     });
     checkDeviceCode().then((value) {
       if (!value) {
@@ -179,7 +180,7 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                           color: Colors.white,
                         ),
                         title: const Text(
-                          "Credits",
+                          "Code",
                           style: TextStyle(color: Colors.white),
                         ),
                         onTap: () {

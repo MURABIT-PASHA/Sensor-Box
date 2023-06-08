@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:sensor_box/backend/file_saver.dart';
 import 'package:sensor_box/ui/screens/phone/phone_record_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../widgets/frosted_glass_box.dart';
 import '../screen_controller.dart';
 
@@ -19,7 +18,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
   bool connection = false;
   String _strCode = "";
   int _intCode = 0;
-  List<int> iconStatus = [];
+  List<bool> iconStatus = [];
   List<String> selectedSensorNames = [];
   List<String> sensorsToBeSend = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -41,9 +40,10 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
       }
     }
   }
-  Future<void> sendStandardRequest(int code) async{
+
+  Future<void> sendStandardRequest(int code) async {
     QuerySnapshot querySnapshot =
-    await _firestore.collection('device_ids').get();
+        await _firestore.collection('device_ids').get();
     for (var document in querySnapshot.docs) {
       if (document.get('id') == code) {
         _firestore.collection('messages').add({
@@ -60,42 +60,19 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
     return deviceStatus;
   }
 
-  Future<int> getDeviceId() async{
+  Future<int> getDeviceId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt('device_id') ?? 48151;
   }
-
-  Future<bool> checkPermissions() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    bool bluetoothPermission = await Permission.bluetooth.isGranted;
-    if (bluetoothPermission) {
-      return true;
-    } else {
-      final bool requested =
-          prefs.getBool('bluetooth_permission_requested') ?? false;
-      if (requested) {
-        return false;
-      } else {
-        final PermissionStatus status = await Permission.bluetooth.request();
-        if (status == PermissionStatus.granted) {
-          await prefs.setBool('bluetooth_permission_requested', true);
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-  }
-  Future<void> cleanMessages(String type) async{
-    QuerySnapshot querySnapshot =
-    await _firestore.collection('messages').get();
+  Future<void> cleanMessages(String type) async {
+    QuerySnapshot querySnapshot = await _firestore.collection('messages').get();
     for (var document in querySnapshot.docs) {
       if (document.get('id') == _intCode && document.get('message') == type) {
         await document.reference.delete();
       }
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -117,9 +94,10 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                   connection = true;
                   sendStandardRequest(_intCode);
                   setState(() {});
-                  if(await _fileSaver.getFiles(_intCode)){
+                  if (await _fileSaver.getFiles(_intCode)) {
                     setState(() {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Dosyalar bulundu ve indiriliyor...")));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("Files found and downloading...")));
                     });
                     await _fileSaver.deleteFilesInStorage(_intCode);
                   }
@@ -129,7 +107,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                         context: context,
                         builder: (builder) {
                           return AlertDialog(
-                            title: const Text("Kodu girin"),
+                            title: const Text("Enter watch code"),
                             content: TextField(
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
@@ -145,19 +123,18 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                                         connectDevice(_intCode);
                                       }
                                     } catch (exception) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
                                               content: Text(
-                                                  "Hatalı giriş yaptınız.")));
+                                                  "Wrong typed")));
                                     }
                                     Navigator.pop(context);
                                   },
-                                  child: const Text("Bağlan"))
+                                  child: const Text("Connect"))
                             ],
                           );
                         });
                   });
-
                 }
               },
               icon: Icon(
@@ -168,123 +145,132 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
       ),
       body: connection
           ? StreamBuilder<QuerySnapshot>(
-            stream: _firestore
-                .collection('messages')
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData == true) {
-                final messages = snapshot.data?.docs.reversed;
-                for (var message in messages!) {
-                  final int deviceID = message.get('id');
-                  final String messageContext = message.get('message');
-                  if (deviceID == _intCode &&
-                      messageContext == 'set_list') {
-                    List<dynamic> dynamicList = message.get('list');
-                    selectedSensorNames = dynamicList.map((item) => item.toString()).toList();
-                    cleanMessages('set_list');
+              stream: _firestore.collection('messages').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData == true) {
+                  final messages = snapshot.data?.docs.reversed;
+                  for (var message in messages!) {
+                    final int deviceID = message.get('id');
+                    final String messageContext = message.get('message');
+                    if (deviceID == _intCode && messageContext == 'set_list') {
+                      List<dynamic> dynamicList = message.get('list');
+                      selectedSensorNames =
+                          dynamicList.map((item) => item.toString()).toList();
+                      iconStatus =
+                          List<bool>.filled(selectedSensorNames.length, false);
+                      cleanMessages('set_list');
+                    }
                   }
-                }
-                return Column(
-                  children: [
-                    SizedBox(
-                      width: width,
-                      height: height - 150,
-                      child: ListView.builder(
-                        itemCount: selectedSensorNames.length,
-                        scrollDirection: Axis.vertical,
-                        physics: const ScrollPhysics(),
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                        itemBuilder: (BuildContext context, int index) {
-                          return FrostedGlassBox(
-                            width: width,
-                            height: 50.0,
-                            child: ListTile(
-                              leading: Icon(
-                                Icons.save,
-                                color: iconStatus.contains(index)
-                                    ? Colors.green
-                                    : Colors.red,
+                  return Column(
+                    children: [
+                      SizedBox(
+                        width: width,
+                        height: height - 150,
+                        child: ListView.builder(
+                          itemCount: selectedSensorNames.length,
+                          scrollDirection: Axis.vertical,
+                          physics: const ScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
+                          itemBuilder: (BuildContext context, int index) {
+                            return FrostedGlassBox(
+                              width: width,
+                              height: 50.0,
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.save,
+                                  color: iconStatus[index]
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                                title: Text(
+                                  selectedSensorNames[index],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    if (iconStatus[index]) {
+                                      iconStatus[index] = false;
+                                    } else {
+                                      iconStatus[index] = true;
+                                    }
+                                  });
+                                },
+                                onLongPress: () {
+                                  // TODO: Open live sensor
+                                },
                               ),
-                              title: Text(
-                                selectedSensorNames[index],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              onTap: () {
-                                setState(() {
-                                  if(iconStatus.contains(index)){
-                                    iconStatus.remove(index);
-                                    print(iconStatus);
-                                  }else{
-                                    iconStatus.add(index);
-                                    print(iconStatus);
-                                  }
-                                });
-                              },
-                              onLongPress: (){
-                                // TODO: Open live sensor
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    selectedSensorNames.isNotEmpty ? Container(
-                      alignment: Alignment.center,
-                      width: width,
-                      height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)
-                          )
+                            );
+                          },
                         ),
-                        onPressed: () {
-                          if(iconStatus.isNotEmpty){
-                            for (var i = 0; i < iconStatus.length; i++){
-                                  sensorsToBeSend.add(selectedSensorNames[iconStatus[i]]);
-                            }
-                            if(sensorsToBeSend.isNotEmpty){
-                              _firestore.collection('messages').add({
-                                'id': _intCode,
-                                'message': "start",
-                                'arguments': sensorsToBeSend,
-                              });
-                              Navigator.push(context, MaterialPageRoute(builder: (builder)=>PhoneRecordScreen(code:_intCode)));
-                            }else{
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Talihsiz bir hata oluştu")));
-                            }
-                          }else{
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Hiçbir sensör seçmedin")));
-                          }
-
-                        },
-                        child: const Text("Kaydı Başlat"),
-
                       ),
-                    ):const Center()
-                  ],
-                );
-              } else {
-                return Center(
-                  child: Container(
-                    width: width,
-                    height: height,
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: const [
-                        CircularProgressIndicator(color: Colors.green,),
-                        Text("Biraz bekleyin..."),
-                      ],
+                      selectedSensorNames.isNotEmpty
+                          ? Container(
+                              alignment: Alignment.center,
+                              width: width,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10))),
+                                onPressed: () {
+                                  sensorsToBeSend = [];
+                                  int counter = 0;
+                                  for (var iconState in iconStatus) {
+                                    if (iconState) {
+                                      sensorsToBeSend
+                                          .add(selectedSensorNames[counter]);
+                                    }
+                                    counter++;
+                                  }
+                                  if (sensorsToBeSend.isNotEmpty) {
+                                    _firestore.collection('messages').add({
+                                      'id': _intCode,
+                                      'message': "start",
+                                      'arguments': sensorsToBeSend,
+                                    });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (builder) =>
+                                                PhoneRecordScreen(
+                                                    code: _intCode)));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                "Unfortunate error showed up")));
+                                  }
+                                },
+                                child: const Text("Start Recording"),
+                              ),
+                            )
+                          : const Center()
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: Container(
+                      width: width,
+                      height: height,
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: const [
+                          CircularProgressIndicator(
+                            color: Colors.green,
+                          ),
+                          Text("Wait a minute..."),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }
-            },
-          )
+                  );
+                }
+              },
+            )
           : const Center(
-              child: Text("Bağlantı bekleniyor..."),
+              child: Text("Connection waiting..."),
             ),
     );
   }
