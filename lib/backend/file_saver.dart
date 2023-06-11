@@ -83,25 +83,25 @@ class FileSaver{
   Future<bool> sendFiles(int deviceCode) async{
     Directory directory = await getApplicationDocumentsDirectory();
     List<FileSystemEntity> files = await directory.list().toList();
+    int flag = 0;
     for (var file in files) {
       if (file is File) {
-        print('Dosya: ${file.path}');
-      } else if (file is Directory) {
-        print('Klasör: ${file.path}');
+        if(file.path.contains(".csv")){
+          String fileName = file.path.split("/").last;
+          await send(fileName, deviceCode);
+          flag += 1;
+        }
       }
     }
-    return false;
+    if(flag!=0){
+      return true;
+    }else{
+      return false;
+    }
   }
 
   Future<bool> saveData(List<Map<String, String>> data, DateTime timestamp, DateTime firstTime) async {
-    /// Saves the given data to CSV files with the given timestamps and headers.
-    /// @param [data] - List of maps containing data to be saved to CSV files.
-    /// Each map represents a CSV file and should have a "name" key
-    /// for the name of the CSV file and other keys as headers for the CSV file.
-    /// @param [timestamp] - Timestamp to be added to the end of each CSV file name.
-    /// @param [firstTime] - Timestamp to be added to the beginning of each CSV file name.
-    /// This is used to differentiate CSV files created at different times.
-    /// Returns true if the data was successfully saved, false otherwise.
+
     List<Map<String, String>> tmpUI = [];
     tmpUI = data;
     if (tmpUI.isNotEmpty) {
