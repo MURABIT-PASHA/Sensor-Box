@@ -114,11 +114,13 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                   cleanMessages('start');
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => WatchRecordScreen(
-                                duration: const Duration(seconds: 1),
-                                sensorNames: arguments)));
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) => WatchRecordScreen(
+                            duration: const Duration(seconds: 1),
+                            sensorNames: arguments),
+                      ),
+                    );
                   });
                 }
               }
@@ -143,10 +145,12 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                         ),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) => WatchSaveSensorScreen(
-                                      sensorNames: sensorNames)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => WatchSaveSensorScreen(
+                                  sensorNames: sensorNames),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -164,10 +168,12 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                         ),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) => LiveSensorScreen(
-                                      sensorNames: sensorNames)));
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) =>
+                                  LiveSensorScreen(sensorNames: sensorNames),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -185,11 +191,13 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
                         ),
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) => WatchInfoScreen(
-                                        code: _intCode,
-                                      )));
+                            context,
+                            MaterialPageRoute(
+                              builder: (builder) => WatchInfoScreen(
+                                code: _intCode,
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
@@ -198,15 +206,17 @@ class _WatchHomeScreenState extends State<WatchHomeScreen> {
               );
             } else {
               return Container(
+                color: backgroundColor,
                 width: width,
                 height: height,
                 alignment: Alignment.center,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: const [
                     CircularProgressIndicator(
                       color: Colors.green,
                     ),
-                    Text("Ana menü yükleniyor..."),
+                    Text("Loading...", style: TextStyle(color: Colors.white),),
                   ],
                 ),
               );

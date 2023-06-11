@@ -1,10 +1,32 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
 class FileSaver{
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+  Future<File> _localFile(String fileName) async {
+    final path = await _localPath;
+    return File('$path/$fileName');
+  }
+  Future<File> writeData(String row, String fileName) async {
+    final file = await _localFile(fileName);
+    return file.writeAsString(row, mode: FileMode.append);
+  }
+  Future<String> readData(fileName) async {
+    try {
+      final file = await _localFile(fileName);
+      final contents = await file.readAsString();
+
+      return contents;
+    } catch (e) {
+      return "";
+    }
+  }
   void deleteFilesInDirectory() async{
     Directory directory = await getApplicationDocumentsDirectory();
     List<FileSystemEntity> files = directory.listSync();
@@ -15,17 +37,13 @@ class FileSaver{
     }
   }
 
-  Future<void> send(String path, int deviceCode) async{
+  Future<void> send(String fileName, int deviceCode) async{
     try{
-      print(path);
-      File file = await File(path).create();
-      final content = await file.readAsLines();
-      for (final line in content) {
-        print("Satır: $line");
-      }
+      final content = readData(fileName);
+        print("Content: $content");
       try{
-        final ref = _storage.ref().child('$deviceCode/$path');
-        final uploadTask = ref.putFile(file);
+        final ref = _storage.ref().child('$deviceCode/$fileName');
+        final uploadTask = ref.putFile(await _localFile(fileName));
         await uploadTask;
       }on FirebaseException catch(e){
         print(e);
@@ -65,18 +83,11 @@ class FileSaver{
   Future<bool> sendFiles(int deviceCode) async{
     Directory directory = await getApplicationDocumentsDirectory();
     List<FileSystemEntity> files = await directory.list().toList();
-    for (FileSystemEntity file in files) {
-      if (file.path.isNotEmpty) {
-        try{
-          String fileName = basename(file.path);
-          send(file.path,deviceCode);
-          print(file.path);
-        }catch(exception){
-          print(exception);
-        }
-        return true;
-      }else{
-        return false;
+    for (var file in files) {
+      if (file is File) {
+        print('Dosya: ${file.path}');
+      } else if (file is Directory) {
+        print('Klasör: ${file.path}');
       }
     }
     return false;
@@ -94,31 +105,22 @@ class FileSaver{
     List<Map<String, String>> tmpUI = [];
     tmpUI = data;
     if (tmpUI.isNotEmpty) {
-      late String directory;
-      await getApplicationDocumentsDirectory().then((value) =>
-      directory = value.path);
       for (Map<String, String> sensor in tmpUI) {
         final String csvFile = "${sensor["name"]}${firstTime
-            .millisecondsSinceEpoch}.csv";;
-        final filePath = "$directory/$csvFile";
-        final File file = File(filePath);
-        if (await file.exists()) {
+            .millisecondsSinceEpoch}.csv";
+        String readerData = await readData(csvFile);
+        if (readerData!="") {
           final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
-          await file.writeAsString(values, mode: FileMode.append);
+          await writeData(values, csvFile);
         }
         else {
-          print("Not Exist");
-          // Create headers
           final headers = '${sensor.keys.join(',')},timestamp\n';
-          // Create values row
           final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
-          // Write headers and values to file
-          await file.writeAsString(headers + values);
+          await writeData(headers+values, csvFile);
         }
       }
       return true;
     }else {
-      print("Sensor yazma hatası var");
       return false;
     }
   }

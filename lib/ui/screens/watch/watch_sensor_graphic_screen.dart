@@ -27,7 +27,11 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
       case "Accelerometer":
         return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
       case "Gyroscope":
-        return ['Angular Speed around X', 'Angular Speed around Y', 'Angular Speed around Z'];
+        return [
+          'Angular Speed around X',
+          'Angular Speed around Y',
+          'Angular Speed around Z'
+        ];
       case "Magnetic Field":
         return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
       case "Orientation":
@@ -45,30 +49,51 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
       case "Uncalibrated Magnetic field":
         return [];
       case "Uncalibrated Gyroscope":
-        return ['Angular Speed around X', 'Angular Speed around Y', 'Angular Speed around Z', 'Estimated Drift around X', 'Estimated Drift around Y', 'Estimated Drift around Z'];
+        return [
+          'Angular Speed around X',
+          'Angular Speed around Y',
+          'Angular Speed around Z',
+          'Estimated Drift around X',
+          'Estimated Drift around Y',
+          'Estimated Drift around Z'
+        ];
       case "Heart Rate":
         return ['Confidence'];
       case "Gesture":
         return [];
       case "Game Rotation":
-        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)'];
+        return [
+          'X * Sin(\u{03b8}/2)',
+          'Y * Sin(\u{03b8}/2)',
+          'Z * Sin(\u{03b8}/2)'
+        ];
       case "Geographic Magnetic Rotation":
-        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)', 'Cos(\u{03b8}/2)'];
+        return [
+          'X * Sin(\u{03b8}/2)',
+          'Y * Sin(\u{03b8}/2)',
+          'Z * Sin(\u{03b8}/2)',
+          'Cos(\u{03b8}/2)'
+        ];
       case "Gravity":
         return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
       case "Linear Acceleration":
         return ['Along X-axis', 'Along Y-axis', 'Along Z-axis'];
       case "Rotation":
-        return ['X * Sin(\u{03b8}/2)', 'Y * Sin(\u{03b8}/2)', 'Z * Sin(\u{03b8}/2)', 'Cos(\u{03b8}/2)'];
+        return [
+          'X * Sin(\u{03b8}/2)',
+          'Y * Sin(\u{03b8}/2)',
+          'Z * Sin(\u{03b8}/2)',
+          'Cos(\u{03b8}/2)'
+        ];
       default:
         return [];
     }
   }
 
-  Stream<double> startStreamData() {
+  Stream<double> startStreamData(String dataName) {
     return Stream.periodic(const Duration(milliseconds: 500), (_) {
       return double.parse(
-          sensorData.getSensorsInfo()[0]['Along X-axis']!.split(" ")[0]);
+          sensorData.getSensorsInfo()[0][dataName]!.split(' ')[0]);
     }).asBroadcastStream();
   }
 
@@ -76,7 +101,6 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
   void initState() {
     super.initState();
     sensorData.initializeSensors([widget.sensorName]);
-    getTypeOfSensor();
   }
 
   @override
@@ -87,6 +111,7 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> stackedCharts = buildStackedCharts(getTypeOfSensor().length);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -98,17 +123,35 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
               width: widget.width - 10,
               height: widget.height - 10,
               alignment: Alignment.center,
-              child: RealTimeGraph(
-                xAxisColor: Colors.white,
-                yAxisColor: Colors.white,
-                graphColor: Colors.red,
-                stream: startStreamData(),
-                supportNegativeValuesDisplay: true,
-              ),
+              child: Stack(
+                children: stackedCharts,
+              )
             ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> buildStackedCharts(int length) {
+    List<Widget> charts = [];
+    for (int i = 0; i < length; i++) {
+      Widget chart = RealTimeGraph(
+        xAxisColor: Colors.white,
+        yAxisColor: Colors.white,
+        graphColor: Colors.red,
+        stream: startStreamData(getTypeOfSensor()[i]),
+        supportNegativeValuesDisplay: true,
+      );
+      charts.add(
+        Positioned.fill(
+          child: Align(
+            alignment: Alignment.center,
+            child: chart,
+          ),
+        ),
+      );
+    }
+    return charts;
   }
 }
