@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'file_saver.dart';
+import 'file_manager.dart';
 import 'sensor_info_holder.dart';
 
 class SensorData {
@@ -578,7 +578,7 @@ class SensorData {
   }
 
   Future<bool> writeData(DateTime timestamp, DateTime firstTime) async {
-    FileSaver file = FileSaver();
+    FileManager file = FileManager();
     return await file.saveData(getSensorsInfo(), timestamp, firstTime);
   }
 

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import "package:flutter/material.dart";
-import 'package:sensor_box/backend/file_saver.dart';
+import 'package:sensor_box/backend/file_manager.dart';
 import 'package:sensor_box/backend/sensor_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +19,7 @@ class WatchRecordScreen extends StatefulWidget {
 
 class _WatchRecordScreenState extends State<WatchRecordScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FileSaver _fileSaver = FileSaver();
+  final FileManager _fileSaver = FileManager();
   late Timer _timer;
   late Timer _writeTimer;
   final DateTime _currentTime = DateTime.now();

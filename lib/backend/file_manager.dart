@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:external_path/external_path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
-class FileSaver{
+class FileManager{
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<String> get _storagePath async{
@@ -57,6 +57,7 @@ class FileSaver{
     if(result.items.isNotEmpty) {
       for (var fileRef in result.items) {
         final filePath = '${await _storagePath}/SensorBox/${fileRef.name}';
+        print(filePath);
         File writtenFile = File(filePath);
         if(await writtenFile.exists()){
           await fileRef.writeToFile(writtenFile);

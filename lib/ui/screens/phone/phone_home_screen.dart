@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sensor_box/backend/file_saver.dart';
+import 'package:sensor_box/backend/file_manager.dart';
 import 'package:sensor_box/ui/screens/phone/phone_live_sensor_screen.dart';
 import 'package:sensor_box/ui/screens/phone/phone_record_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +24,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
   List<String> selectedSensorNames = [];
   List<String> sensorsToBeSend = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FileSaver _fileSaver = FileSaver();
+  final FileManager _fileSaver = FileManager();
   Future<void> connectDevice(int code) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     QuerySnapshot querySnapshot =
