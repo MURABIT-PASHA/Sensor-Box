@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sensor_box/backend/file_saver.dart';
+import 'package:sensor_box/ui/screens/phone/phone_live_sensor_screen.dart';
 import 'package:sensor_box/ui/screens/phone/phone_record_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../widgets/frosted_glass_box.dart';
 import '../screen_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PhoneHomeScreen extends StatefulWidget {
   final ScreenController state;
@@ -72,9 +74,27 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
       }
     }
   }
+  Future<void> requestWriteAndReadPermission() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }else{
+      prefs.setBool('isStoragePermissionGranted', true);
+    }
+  }
+
+  Future<void> checkStoragePermission() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool storagePermission = prefs.getBool('isStoragePermissionGranted')??false;
+    if(!storagePermission){
+      requestWriteAndReadPermission();
+    }
+  }
 
   @override
   void initState() {
+    checkStoragePermission();
     super.initState();
   }
 
@@ -95,11 +115,11 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                   sendStandardRequest(_intCode);
                   setState(() {});
                   if (await _fileSaver.getFiles(_intCode)) {
-                    setState(() {
+                    if(context.mounted){
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text("Files found and downloading...")));
-                    });
-                    await _fileSaver.deleteFilesInStorage(_intCode);
+                      await _fileSaver.deleteFilesInStorage(_intCode);
+                    }
                   }
                 } else {
                   setState(() {
@@ -197,7 +217,7 @@ class _PhoneHomeScreenState extends State<PhoneHomeScreen> {
                                   });
                                 },
                                 onLongPress: () {
-                                  // TODO: Open live sensor
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (builder)=>PhoneLiveSensorScreen(sensorName: selectedSensorNames[index])));
                                 },
                               ),
                             );

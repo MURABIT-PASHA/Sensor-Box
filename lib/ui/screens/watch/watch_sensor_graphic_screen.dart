@@ -105,7 +105,7 @@ class _WatchSensorGraphicScreenState extends State<WatchSensorGraphicScreen> {
 
   @override
   void dispose() {
-    // TODO: add on will pop scope
+    // TODO: Add on will pop scope to build method.
     super.dispose();
   }
 

@@ -1,8 +1,14 @@
 import 'dart:io';
+import 'package:external_path/external_path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 class FileSaver{
   final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  Future<String> get _storagePath async{
+      return await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS);
+  }
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -21,7 +27,6 @@ class FileSaver{
     try {
       final file = await _localFile(fileName);
       final contents = await file.readAsString();
-
       return contents;
     } catch (e) {
       return "";
@@ -38,9 +43,6 @@ class FileSaver{
   }
 
   Future<void> send(String fileName, int deviceCode) async{
-    try{
-      final content = readData(fileName);
-        print("Content: $content");
       try{
         final ref = _storage.ref().child('$deviceCode/$fileName');
         final uploadTask = ref.putFile(await _localFile(fileName));
@@ -48,21 +50,20 @@ class FileSaver{
       }on FirebaseException catch(e){
         print(e);
       }
-    }on OSError catch(e){
-      print(e);
-    }
-
   }
   Future<bool> getFiles(int deviceCode) async {
-    final directory = await getExternalStorageDirectory();
     final ref = _storage.ref().child('$deviceCode');
     final ListResult result = await ref.listAll();
     if(result.items.isNotEmpty) {
       for (var fileRef in result.items) {
-        var bytes = await fileRef.getData();
-        List<int> intList = bytes?.toList() ?? [];
-        final filePath = '${directory?.path}/Downloads/${fileRef.name}';
-        await File(filePath).writeAsBytes(intList);
+        final filePath = '${await _storagePath}/SensorBox/${fileRef.name}';
+        File writtenFile = File(filePath);
+        if(await writtenFile.exists()){
+          await fileRef.writeToFile(writtenFile);
+        }else{
+          await writtenFile.create(recursive: true);
+          await fileRef.writeToFile(writtenFile);
+        }
       }
     }else{
       return false;
@@ -106,7 +107,7 @@ class FileSaver{
     tmpUI = data;
     if (tmpUI.isNotEmpty) {
       for (Map<String, String> sensor in tmpUI) {
-        final String csvFile = "${sensor["name"]}${firstTime
+        final String csvFile = "${sensor["Type"]}${firstTime
             .millisecondsSinceEpoch}.csv";
         String readerData = await readData(csvFile);
         if (readerData!="") {
