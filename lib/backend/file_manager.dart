@@ -57,7 +57,6 @@ class FileManager{
     if(result.items.isNotEmpty) {
       for (var fileRef in result.items) {
         final filePath = '${await _storagePath}/SensorBox/${fileRef.name}';
-        print(filePath);
         File writtenFile = File(filePath);
         if(await writtenFile.exists()){
           await fileRef.writeToFile(writtenFile);
@@ -96,6 +95,7 @@ class FileManager{
       }
     }
     if(flag!=0){
+      deleteFilesInDirectory();
       return true;
     }else{
       return false;
@@ -112,12 +112,12 @@ class FileManager{
             .millisecondsSinceEpoch}.csv";
         String readerData = await readData(csvFile);
         if (readerData!="") {
-          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
+          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch.toString()}\n';
           await writeData(values, csvFile);
         }
         else {
           final headers = '${sensor.keys.join(',')},timestamp\n';
-          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch}\n';
+          final values = '${sensor.values.join(',')},${timestamp.millisecondsSinceEpoch.toString()}\n';
           await writeData(headers+values, csvFile);
         }
       }
